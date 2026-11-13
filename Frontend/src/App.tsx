@@ -49,6 +49,10 @@ export const App: React.FC = () => {
     return () => window.removeEventListener('app:navigate',navigate);
   }, []);
 
+  useEffect(() => {
+    setActivePage(isAuthenticated ? (currentRole === 'Monitor' ? 'monitor-dashboard' : 'dashboard') : 'login');
+  }, [isAuthenticated, currentRole]);
+
   // Enforce Role-Based Access Control (RBAC) routing when user role changes
   useEffect(() => {
     if (currentRole === 'Monitor' && ASTRONAUT_ONLY_PAGES.includes(activePage)) {
@@ -95,14 +99,14 @@ export const App: React.FC = () => {
       />
 
       {/* Fixed Full-Viewport Role-Filtered Vertical Navigation Dock */}
-      <Sidebar activePage={activePage} setActivePage={setActivePage} />
+      {isAuthenticated && <Sidebar activePage={activePage} setActivePage={setActivePage} />}
 
       {/* Main Console Viewport */}
       <main className="flex-1 min-w-0 flex flex-col gap-5 max-w-[1460px] mx-auto w-full relative z-10">
         <Suspense fallback={<div role="status" className="glass-panel rounded-2xl p-6 animate-pulse">{isRtl?'جارٍ تحميل الصفحة…':'Loading page…'}</div>}>
         {/* Top Header */}
-        {currentRole === 'Astronaut' && <AssignmentReminders />}
-        <Header activePage={activePage} setActivePage={setActivePage} />
+        {isAuthenticated && currentRole === 'Astronaut' && <AssignmentReminders />}
+        {isAuthenticated && <Header activePage={activePage} setActivePage={setActivePage} />}
 
         {/* Unified Aligned Content Container
             - English (!isRtl): Pushed RIGHT (lg:ml-auto lg:mr-0) so Astronaut on LEFT is visible
@@ -112,6 +116,7 @@ export const App: React.FC = () => {
             isRtl ? 'lg:mr-auto lg:ml-0' : 'lg:ml-auto lg:mr-0'
           }`}
         >
+          {!isAuthenticated ? <LoginPage /> : <>
           {/* Astronaut-Only Pages */}
           {currentRole === 'Astronaut' && activePage === 'dashboard' && (
             <div className="w-full flex flex-col gap-4 md:gap-5 animate-in fade-in duration-300">
@@ -164,6 +169,7 @@ export const App: React.FC = () => {
           {activePage === 'chat' && <GroundOrbitChatPage />}
 
           {activePage === 'login' && <LoginPage onSuccessNavigate={setActivePage} />}
+          </>}
         </div>
       </Suspense>
       </main>

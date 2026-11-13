@@ -607,6 +607,7 @@ export const TelemetryProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   const [lastTelemetryBeatAt, setLastTelemetryBeatAt] = useState<string>(new Date().toISOString());
 
   const pendingChatIds = useRef(new Map<string,string>());
+  const sessionGeneration = useRef(0);
   const resetAccountData = () => {
     pendingChatIds.current.clear();
     setAlerts([]);
@@ -628,14 +629,16 @@ export const TelemetryProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
   useEffect(() => {
     let mounted = true;
-    if (api.getAccessToken()) api.getCurrentUser().then(user => {
-      if (!mounted) return;
+    const startingToken = api.getAccessToken();
+    const generation = sessionGeneration.current;
+    if (startingToken) api.getCurrentUser().then(user => {
+      if (!mounted || generation !== sessionGeneration.current || !api.getAccessToken()) return;
       setActiveAccount(user.username); setCurrentUserName(user.fullName);
       setCurrentRoleState(user.role); setCurrentAstronautId(user.astronautId ?? null);
       if (user.astronautId) setSelectedChatAstronautId(user.astronautId);
       setIsAuthenticated(true);
     }).catch(reportError);
-    const expired = () => { setIsAuthenticated(false); setCurrentAstronautId(null); void signalRService.disconnect(); };
+    const expired = () => { sessionGeneration.current++; api.clearTokens(); resetAccountData(); setIsAuthenticated(false); setActiveAccount(''); setCurrentUserName(''); setCurrentAstronautId(null); void signalRService.disconnect(); };
     window.addEventListener('app:unauthorized',expired);
     const online = () => setIsOnline(navigator.onLine);
     window.addEventListener('online', online); window.addEventListener('offline', online);
@@ -852,13 +855,9 @@ export const TelemetryProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   };
 
   const logout = async () => {
-    try {
-      await api.logout();
-    } catch {
-      // Ignore network error on logout
-    }
-    await signalRService.disconnect();
-    api.clearTokens();
+    sessionGeneration.current++;
+    const logoutRequest = api.logout().catch(() => {});
+    void signalRService.disconnect();
     resetAccountData();
     setIsAuthenticated(false);
     setActiveAccount('');
@@ -866,6 +865,7 @@ export const TelemetryProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     setCurrentRoleState('Astronaut');
     setCurrentAstronautId(null);
     setChatMessages([]);
+    await logoutRequest;
   };
 
   const login = async (
@@ -875,6 +875,7 @@ export const TelemetryProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     try {
       if (!password) throw new Error('Enter your password to sign in.');
       const res = await api.login(username, password);
+      sessionGeneration.current++;
       const resolvedRole = res.role as 'Astronaut' | 'Monitor';
       const resolvedName = res.fullName || username;
       const resolvedAstroId = res.astronautId ?? null;
@@ -888,7 +889,7 @@ export const TelemetryProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         setSelectedChatAstronautId(resolvedAstroId);
       }
 
-      await signalRService.connect();
+      void signalRService.connect();
       return { success: true };
     } catch (err: any) {
       return { success: false, message: err?.message || 'Login failed' };

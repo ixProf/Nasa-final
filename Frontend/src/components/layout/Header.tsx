@@ -32,6 +32,7 @@ export const Header: React.FC<HeaderProps> = ({ activePage, setActivePage }) => 
     isOnline,
     currentRole,
     currentUserName,
+    logout,
   } = useTelemetry();
   const isAr = language === 'ar';
 
@@ -292,8 +293,9 @@ export const Header: React.FC<HeaderProps> = ({ activePage, setActivePage }) => 
 
           {/* Subtle Logout / Switch Account Icon Button */}
           <AsyncButton
-            onClick={() => setActivePage('login')}
-            title={tx(isAr ? 'تبديل الحساب / تسجيل الخروج' : 'Switch Account / Sign Out')}
+            onClick={logout}
+            title={isAr ? 'تسجيل الخروج' : 'Sign out'}
+            aria-label={isAr ? 'تسجيل الخروج' : 'Sign out'}
             className="w-9 h-9 rounded-xl glass-panel-subtle hover:border-rose-400/40 text-slate-300 hover:text-rose-300 flex items-center justify-center transition-all cursor-pointer"
           >
             <LogOut className="w-4 h-4" />

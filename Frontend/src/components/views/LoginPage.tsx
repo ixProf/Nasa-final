@@ -184,8 +184,8 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onSuccessNavigate }) => {
     setStatusMsg({
       type: 'success',
       text: isAr
-        ? 'تم تسجيل الخروج بنجاح وإنهاء كافة الاتصالات السابقة. يمكنك الآن اختيار حساب جديد للدخول.'
-        : 'Logged out successfully. All prior sessions closed. Select an account below to sign in.',
+        ? 'تم تسجيل الخروج.'
+        : 'Signed out.',
     });
   };
 
@@ -254,8 +254,8 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onSuccessNavigate }) => {
               <div className="p-2.5 rounded-xl bg-amber-500/10 border border-amber-400/25 text-[11px] text-amber-200 leading-relaxed">
                 <p>
                   {tx(isAr
-                    ? '⚠️ لتسجيل الدخول بحساب آخر أو تبديل الرائد/الطبيب، يجب تسجيل الخروج من الجلسة الحالية أولاً لضمان عدم تداخل البيانات والمحادثات.'
-                    : '⚠️ To log into another account or switch user, you must log out first to prevent telemetry and chat message collision.')}
+                    ? 'سجّل الخروج للدخول بحساب آخر.'
+                    : 'Sign out to use another account.')}
                 </p>
               </div>
             </div>
@@ -354,8 +354,8 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onSuccessNavigate }) => {
                 <LogOut className="w-4 h-4" />
                 <span>
                   {tx(isAr
-                    ? 'تسجيل الخروج أولاً لتبديل الحساب'
-                    : 'Log Out First to Switch Account')}
+                    ? 'تسجيل الخروج'
+                    : 'Sign out')}
                 </span>
               </AsyncButton>
             )}

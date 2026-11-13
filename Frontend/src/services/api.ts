@@ -184,7 +184,7 @@ class ApiService {
     }
 
     if (!response.ok) {
-      if (response.status === 401 && !endpoint.startsWith('/auth/login')) {
+      if (response.status === 401 && !endpoint.startsWith('/auth/') && (!this.accessToken || this.accessToken === tokenAtRequest)) {
         window.dispatchEvent(new Event('app:unauthorized'));
       }
       const errorData = await response.json().catch(() => ({}));
@@ -268,10 +268,13 @@ class ApiService {
   }
 
   public async logout(): Promise<any> {
-    try { return await this.request<any>('/auth/logout', {
+    const token = this.refreshToken;
+    const request = this.request<any>('/auth/logout', {
       method: 'POST',
-      body: JSON.stringify({ refreshToken: this.refreshToken }),
-    }); } finally { this.clearTokens(); }
+      body: JSON.stringify({ refreshToken: token }),
+    });
+    this.clearTokens();
+    return request;
   }
 
   public async getCurrentUser(): Promise<any> {
