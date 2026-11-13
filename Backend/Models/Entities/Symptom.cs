@@ -14,7 +14,7 @@ public class Symptom : BaseEntity
 
     /// <summary>
     /// Critical red-flag indicator requiring immediate monitor notification and emergency triage.
-    /// Strictly limited to FAINTING, CHEST_PAIN, and DIFFICULTY_BREATHING.
+    /// Eight red flags defined in the version 2 demonstration catalog.
     /// </summary>
     public bool IsRedFlag { get; set; }
 

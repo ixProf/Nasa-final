@@ -20,6 +20,7 @@ using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddSingleton(TimeProvider.System);
+builder.Services.AddHttpClient<RiskProbabilityPredictor>();
 builder.Services.AddScoped<HabitService>();
 builder.Services.AddScoped<AssignmentReminderService>();
 builder.Services.AddSingleton<IAssignmentReminderNotifier, AssignmentReminderNotifier>();

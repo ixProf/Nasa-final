@@ -11,6 +11,7 @@ public class ConditionSymptomConfiguration : IEntityTypeConfiguration<ConditionS
         builder.ToTable("ConditionSymptoms");
 
         builder.HasKey(cs => cs.Id);
+        builder.Property(cs=>cs.Weight).HasPrecision(12,9);
 
         builder.HasIndex(cs => new { cs.ConditionId, cs.SymptomId })
             .IsUnique();

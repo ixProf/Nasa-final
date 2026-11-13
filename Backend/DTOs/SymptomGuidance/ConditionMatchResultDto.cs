@@ -6,6 +6,18 @@ namespace AstronautHealthMonitoring.DTOs.SymptomGuidance;
 /// </summary>
 public class ConditionMatchResultDto
 {
+    public string HazardCode {get;set;} = "";
+    public int FollowUpLevel {get;set;}=1;
+    public decimal MatchPercentage => AssociationIndex;
+    public decimal? ProbabilityPercent {get;set;}
+    public string ProbabilityStatus {get;set;}="model_not_configured";
+    public List<string> FollowUpReasons {get;set;}=[];
+    public decimal AssociationIndex {get;set;}
+    public string Strength {get;set;} = "weak";
+    public string Explanation {get;set;} = "";
+    public string ExplanationAr {get;set;} = "";
+    public List<string> MatchedSymptomCodes {get;set;}=[];
+    public AssociationBreakdown? Breakdown {get;set;}
     public string ConditionCode { get; set; } = string.Empty;
     public string ConditionName { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;

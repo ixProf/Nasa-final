@@ -12,11 +12,14 @@ import { useUiText } from "../../i18n/useUiText";
  * It does NOT replace the existing symptom assessment or condition guide.
  */
 
-import React, { useState, useCallback, lazy, Suspense } from 'react';
+import React, { useState, useCallback, useEffect, lazy, Suspense } from 'react';
 import { Brain, Heart, Wind, Eye, Atom } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
 import { useTelemetry } from '../../context/TelemetryContext';
 import { BODY_REGIONS, type BodyRegionId, type BodyRegion } from '../../data/bodyRegions';
+import { AnatomyViewer } from './AnatomyViewer';
+import { AnatomySymptomsContext, type AnatomySymptom } from './AnatomySymptomsContext';
+import { REGION_SYMPTOMS } from '../../services/anatomy';
 
 // Lazy load the 3D canvas (heavy bundle — only loaded when visible)
 const BodyMap3D = lazy(() =>
@@ -96,15 +99,17 @@ function useRegionStatus(region: BodyRegion): VStatus {
 // ─── Sidebar region card ──────────────────────────────────────────────────────
 
 interface RegionCardProps {
+  selectedSymptoms?: AnatomySymptom[];
   region: BodyRegion;
   isSelected: boolean;
   onClick: () => void;
   isAr: boolean;
 }
 
-const RegionCard: React.FC<RegionCardProps> = ({ region, isSelected, onClick, isAr }) => {
+const RegionCard: React.FC<RegionCardProps> = ({ region, isSelected, onClick, isAr, selectedSymptoms=[] }) => {
   const tx = useUiText();
   const status = useRegionStatus(region);
+  const linked = selectedSymptoms.filter(s=>REGION_SYMPTOMS[region.id].includes(s.code));
 
   return (
     <button
@@ -141,6 +146,7 @@ const RegionCard: React.FC<RegionCardProps> = ({ region, isSelected, onClick, is
         <p className="text-[11px] text-slate-400 mt-0.5 line-clamp-1">
           {tx(isAr ? region.descriptionAr : region.descriptionEn)}
         </p>
+        {linked.length > 0 && <p className="mt-1 text-[11px] text-amber-200">{isAr?'أعراض مختارة مرتبطة: ':'Related selected symptoms: '}{linked.map(s=>s.label).join(isAr?'، ':', ')}</p>}
       </div>
     </button>
   );
@@ -241,12 +247,13 @@ const CanvasLoadingFallback: React.FC<{ isAr: boolean }> = ({ isAr }) => (
 
 // ─── Main component ───────────────────────────────────────────────────────────
 
-export const BodyMapPanel: React.FC = () => {
+export const BodyMapPanel: React.FC<{onRegionChange?:(id:BodyRegionId|null)=>void;activeRegionId?:BodyRegionId|null;selectedSymptoms?:AnatomySymptom[]}> = ({onRegionChange,activeRegionId,selectedSymptoms=[]}) => {
   const tx = useUiText();
   const { language, isRtl } = useLanguage();
   const isAr = language === 'ar';
 
   const [selectedRegionId, setSelectedRegionId] = useState<BodyRegionId | null>(null);
+  useEffect(()=>{if(activeRegionId!==undefined)setSelectedRegionId(activeRegionId);},[activeRegionId]);
   const [is3DEnabled, setIs3DEnabled] = useState(true);
   const [isPanelExpanded, setIsPanelExpanded] = useState(true);
 
@@ -255,8 +262,9 @@ export const BodyMapPanel: React.FC = () => {
     : null;
 
   const handleRegionSelect = useCallback((id: BodyRegionId) => {
-    setSelectedRegionId((prev) => (prev === id ? null : id));
-  }, []);
+    const next=selectedRegionId===id?null:id;
+    setSelectedRegionId(next);onRegionChange?.(next);
+  }, [selectedRegionId,onRegionChange]);
 
   return (
     <div className="glass-panel rounded-[22px] overflow-hidden">
@@ -318,7 +326,7 @@ export const BodyMapPanel: React.FC = () => {
               className={`${selectedRegion ? 'lg:col-span-3' : 'col-span-full'} relative rounded-xl overflow-hidden`}
               style={{
                 minHeight: 320,
-                height: selectedRegion ? 380 : 340,
+                height: 'clamp(400px, 58vw, 540px)',
                 background:
                   'radial-gradient(ellipse at 50% 60%, rgba(14,30,68,0.6) 0%, rgba(2,6,20,0.85) 100%)',
                 border: '1px solid rgba(56,189,248,0.12)',
@@ -326,12 +334,10 @@ export const BodyMapPanel: React.FC = () => {
             >
               {is3DEnabled ? (
                 <Suspense fallback={<CanvasLoadingFallback isAr={isAr} />}>
-                  <BodyMap3D
+                  <AnatomySymptomsContext.Provider value={selectedSymptoms}><AnatomyViewer
                     selectedRegionId={selectedRegionId}
                     onRegionSelect={handleRegionSelect}
-                    height="100%"
-                    showParticles={true}
-                  />
+                  /></AnatomySymptomsContext.Provider>
                 </Suspense>
               ) : (
                 <SVGBodyFallback
@@ -351,6 +357,7 @@ export const BodyMapPanel: React.FC = () => {
                     <RegionCard
                       key={region.id}
                       region={region}
+                      selectedSymptoms={selectedSymptoms}
                       isSelected={false}
                       onClick={() => handleRegionSelect(region.id)}
                       isAr={isAr}
@@ -365,6 +372,7 @@ export const BodyMapPanel: React.FC = () => {
                       <RegionCard
                         key={region.id}
                         region={region}
+                        selectedSymptoms={selectedSymptoms}
                         isSelected={selectedRegionId === region.id}
                         onClick={() => handleRegionSelect(region.id)}
                         isAr={isAr}

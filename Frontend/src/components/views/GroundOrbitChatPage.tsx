@@ -305,13 +305,13 @@ export const GroundOrbitChatPage: React.FC = () => {
                 <span>{tx(isAr ? 'الاستشارة الطبية المباشرة والمحادثات' : 'Ground-Orbit Telemedicine')}</span>
                 <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-500/15 text-emerald-300 border border-emerald-400/30">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
-                  {tx(isOnline ? (isAr ? 'ناقل المحطة مباشر' : 'SignalR Live') : (isAr ? 'وضع غير متصل' : 'Offline'))}
+                  {tx(isOnline ? (isAr ? "متصل" : "Connected") : (isAr ? 'وضع غير متصل' : 'Offline'))}
                 </span>
               </h3>
               <p className="text-xs text-slate-300">
                 {tx(isAr
-                  ? 'قناة اتصال مشفرة وموجهة بين أفراد الطاقم والمركز الطبي الأرضي'
-                  : 'Encrypted bidirectional telemetry & clinical chat channel')}
+                  ? "ابقَ على تواصل مع فريقك الطبي."
+                  : "Stay connected with your medical team.")}
               </p>
             </div>
           </div>

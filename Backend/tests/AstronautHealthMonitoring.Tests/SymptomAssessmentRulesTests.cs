@@ -37,6 +37,8 @@ public class SymptomAssessmentRulesTests
         var response = new SymptomAssessmentResponseDto {Matches=[new() {ConditionName="Private educational reference"}]};
         var json = System.Text.Json.JsonSerializer.Serialize(response);
         Assert.DoesNotContain("Private educational reference",json);
-        Assert.DoesNotContain("Matches",json);
+        using var document=System.Text.Json.JsonDocument.Parse(json);
+        Assert.False(document.RootElement.TryGetProperty("Matches",out _));
+        Assert.True(document.RootElement.TryGetProperty("ConditionMatches",out _));
     }
 }

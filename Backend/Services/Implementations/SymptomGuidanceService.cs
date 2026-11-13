@@ -11,6 +11,8 @@ namespace AstronautHealthMonitoring.Services.Implementations;
 
 public class SymptomGuidanceService : ISymptomGuidanceService
 {
+    private readonly IConfiguration? _configuration;
+    private readonly RiskProbabilityPredictor? _probabilityPredictor;
     private readonly AppDbContext _dbContext;
     private readonly IHealthAlertService _healthAlertService;
     private readonly IMapper _mapper;
@@ -20,8 +22,10 @@ public class SymptomGuidanceService : ISymptomGuidanceService
         AppDbContext dbContext,
         IHealthAlertService healthAlertService,
         IMapper mapper,
-        ILogger<SymptomGuidanceService> logger)
+        ILogger<SymptomGuidanceService> logger, IConfiguration? configuration=null,RiskProbabilityPredictor? probabilityPredictor=null)
     {
+        _configuration=configuration;
+        _probabilityPredictor=probabilityPredictor;
         _dbContext = dbContext;
         _healthAlertService = healthAlertService;
         _mapper = mapper;
@@ -106,62 +110,6 @@ public class SymptomGuidanceService : ISymptomGuidanceService
 
         if (symptoms.Count != normalizedCodes.Count)
             throw new InvalidOperationException("One or more symptom codes are not in the symptom catalog.");
-        var cutoff = DateTime.UtcNow.AddHours(-24);
-        var readings = await _dbContext.VitalSignReadings.AsNoTracking()
-            .Include(r => r.VitalSignType)
-            .Where(r => r.AstronautId == request.AstronautId && r.RecordedAt >= cutoff)
-            .ToListAsync(cancellationToken);
-        var latestReadings = readings.GroupBy(r => r.VitalSignTypeId)
-            .Select(g => g.OrderByDescending(r => r.RecordedAt).First()).ToList();
-        var latestSleep = await _dbContext.SleepRecords.AsNoTracking()
-            .Where(r => r.AstronautId == request.AstronautId && r.RecordedAt >= cutoff)
-            .OrderByDescending(r => r.RecordedAt).FirstOrDefaultAsync(cancellationToken);
-        response = SymptomAssessmentRules.Evaluate(request, symptoms, latestReadings, latestSleep?.DurationHours);
-
-        var conditions = await _dbContext.SpaceConditions
-            .AsNoTracking()
-            .Where(c => c.IsMatchable)
-            .Include(c => c.ConditionSymptoms)
-                .ThenInclude(cs => cs.Symptom)
-            .ToListAsync(cancellationToken);
-
-        var matches = new List<ConditionMatchResultDto>();
-
-        foreach (var condition in conditions)
-        {
-            var matchedConditionSymptoms = condition.ConditionSymptoms
-                .Where(cs => cs.Symptom != null && normalizedCodes.Contains(cs.Symptom.Code.ToUpper()))
-                .ToList();
-
-            if (matchedConditionSymptoms.Count > 0)
-            {
-                var matchedNames = matchedConditionSymptoms
-                    .Select(cs => cs.Symptom!.Name)
-                    .Distinct()
-                    .ToList();
-
-                var hasConditionRedFlag = matchedConditionSymptoms.Any(cs => cs.Symptom != null && cs.Symptom.IsRedFlag);
-
-                matches.Add(new ConditionMatchResultDto
-                {
-                    ConditionCode = condition.Code,
-                    ConditionName = condition.Name,
-                    Description = condition.Description,
-                    SelfCareGuidance = condition.SelfCareGuidance,
-                    WhenToContactMonitor = condition.WhenToContactMonitor,
-                    SourceReference = condition.SourceReference,
-                    MatchedSymptoms = matchedNames,
-                    HasRedFlag = hasConditionRedFlag
-                });
-            }
-        }
-
-        response.Matches = matches
-            .OrderByDescending(m => m.MatchedSymptoms.Count)
-            .ThenByDescending(m => m.HasRedFlag)
-            .ThenBy(m => m.ConditionName)
-            .ToList();
-
         if (redFlags.Count > 0)
         {
             response.ShouldEscalate = true;
@@ -189,7 +137,44 @@ public class SymptomGuidanceService : ISymptomGuidanceService
             }
         }
 
+        var cutoff = DateTime.UtcNow.AddHours(-24);
+        var readings = await _dbContext.VitalSignReadings.AsNoTracking()
+            .Include(r => r.VitalSignType)
+            .Where(r => r.AstronautId == request.AstronautId && r.RecordedAt >= cutoff && r.RecordedAt<=DateTime.UtcNow)
+            .ToListAsync(cancellationToken);
+        var latestReadings = readings.GroupBy(r => r.VitalSignTypeId)
+            .Select(g => g.OrderByDescending(r => r.RecordedAt).First()).ToList();
+        var latestSleep = await _dbContext.SleepRecords.AsNoTracking()
+            .Where(r => r.AstronautId == request.AstronautId && r.RecordedAt >= cutoff)
+            .OrderByDescending(r => r.RecordedAt).FirstOrDefaultAsync(cancellationToken);
+        var triage = SymptomAssessmentRules.Evaluate(request, symptoms, latestReadings, latestSleep?.DurationHours);
+        triage.TriggeredAlertId=response.TriggeredAlertId;triage.AlertDeliveryError=response.AlertDeliveryError;
+        if(response.AlertDeliveryError is not null)triage.Reasons.Add(response.AlertDeliveryError);
+        response=triage;
+        var conditions = await _dbContext.SpaceConditions.AsNoTracking()
+            .Include(c=>c.ConditionSymptoms).ThenInclude(link=>link.Symptom)
+            .Include(c=>c.ConditionVitalSigns).ToListAsync(cancellationToken);
+        var context=await AssociationContextResolver.ResolveAsync(_dbContext,request.AstronautId,_configuration,DateTime.UtcNow,cancellationToken);
+        SymptomAssociationEngine.Apply(response,normalizedCodes,conditions,latestReadings,context);
+        SymptomFindingClassifier.Apply(response,request,symptoms,conditions,latestReadings,latestSleep?.DurationHours);
+        if(response.Level==3 && !response.TriggeredAlertId.HasValue && redFlags.Count==0)
+        {
+            var critical=string.Join(", ",response.ConditionMatches.Where(c=>c.FollowUpLevel==3).Select(c=>c.ConditionCode));
+            try {
+                var alert=await _healthAlertService.TriggerManualAlertAsync(new TriggerManualAlertRequest {
+                    AstronautId=astronaut.Id,Severity=AlertSeverity.Emergency,Title="Critical Assessment Finding",
+                    Message=$"Critical findings require medical review: {critical}",Reason="A matching symptom pattern has a related recent emergency vital reading.",
+                    ActionRequired="Alert crew and the medical officer now and follow the mission emergency protocol."
+                },cancellationToken);
+                response.TriggeredAlertId=alert.Id;
+            } catch(Exception error) {
+                _logger.LogError(error,"Critical assessment alert could not be saved for astronaut {AstronautId}",astronaut.Id);
+                response.AlertDeliveryError="Emergency notification could not be saved. Contact the medical officer immediately and retry when connected.";
+            }
+        }
+        AssociationGuidance.Apply(response,request.Locale);
+        // Alerts have already been handled; an optional remote model never delays their dispatch.
+        if(_probabilityPredictor is not null)await _probabilityPredictor.ApplyAsync(response,cancellationToken);
         return response;
     }
 }
-

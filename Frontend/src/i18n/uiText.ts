@@ -3,6 +3,8 @@ import { clinicalPhrases } from './clinical';
 
 const words: Record<string,string> = {
   ...existing, ...clinicalPhrases,
+  'No readings recorded yet.':'لا توجد قراءات مسجّلة بعد.',
+  'Status reflects the latest readings and open alerts. Follow your mission medical plan.':'تعكس الحالة أحدث القراءات والتنبيهات المفتوحة. اتبع خطة الرعاية الطبية للمهمة.',
   'Average sleep was below 5 hours across two nights.':'متوسط النوم أقل من ٥ ساعات خلال ليلتين.',
   'Average sleep was below 6.5 hours across three nights.':'متوسط النوم أقل من ٦٫٥ ساعات خلال ثلاث ليالٍ.',
   'Mood was 1/5, or remained at 2/5 or lower for five days.':'المزاج ١ من ٥، أو ظل عند ٢ من ٥ أو أقل لمدة خمسة أيام.',

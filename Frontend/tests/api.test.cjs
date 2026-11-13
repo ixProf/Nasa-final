@@ -13,13 +13,15 @@ function client(fetch, language='en') {
   const contract = {};
   const submissions = {};
   const offline = {};
+  const association={};
+  vm.runInNewContext(ts.transpileModule(fs.readFileSync(path.join(__dirname,'../src/services/offlineAssociation.ts'),'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText,{exports:association});
   vm.runInNewContext(ts.transpileModule(fs.readFileSync(path.join(__dirname,'../src/services/offlineMeasurements.ts'),'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText,{exports:offline});
   vm.runInNewContext(ts.transpileModule(fs.readFileSync(path.join(__dirname,'../src/services/submissions.ts'),'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText,{exports:submissions,crypto:globalThis.crypto});
   vm.runInNewContext(ts.transpileModule(fs.readFileSync(path.join(__dirname,'../src/services/contract.ts'),'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText,{exports:contract});
   const source = ts.transpileModule(fs.readFileSync(path.join(__dirname,'../src/services/api.ts'),'utf8'),
     {compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText;
   vm.runInNewContext(source, {
-    exports, require: name => name === './config' ? {API_BASE:'/api'} : name === './contract' ? contract : name === './submissions' ? submissions : name === './offlineMeasurements' ? offline : {reportError:e=>errors.push(e.message)},
+    exports, require: name => name === './config' ? {API_BASE:'/api'} : name === './contract' ? contract : name === './submissions' ? submissions : name === './offlineMeasurements' ? offline : name === './offlineAssociation' ? association : {reportError:e=>errors.push(e.message)},
     localStorage:{getItem:k=>values.get(k)||null,setItem:(k,v)=>values.set(k,v),removeItem:k=>values.delete(k)},
     window:{dispatchEvent(){}}, Event, CustomEvent, fetch, crypto:globalThis.crypto, URLSearchParams, atob,
   });
@@ -30,7 +32,7 @@ const json = (data,status=200) => new Response(JSON.stringify(data),{status,head
 test('database failures display actionable safe messages and a request ID in either language',async()=>{
   for(const lang of ['en','ar']){
     const {api}=client(async()=>json({code:'DATABASE_UPDATE_REQUIRED',message:'Run database migration.',messageAr:'يجب تحديث قاعدة البيانات.',traceId:'request-42'},503),lang);
-    await assert.rejects(api.getMissions(),error=>error.message.includes(lang==='ar'?'يجب تحديث قاعدة البيانات.':'Run database migration.')&&error.message.includes('request-42')&&error.status===503);
+    await assert.rejects(api.getMissions(),error=>error.message.includes(lang==='ar'?'يجري تحديث الخدمة.':'The service is being updated.')&&error.message.includes('request-42')&&error.status===503);
   }
 });
 test('unexpected server exceptions never expose database details',async()=>{
@@ -70,7 +72,7 @@ test('partial sync leaves missing results pending and shows rejected records as 
 test('cached guides remain readable offline but a server error is not hidden by cached data',async()=>{
   let mode='online';const {api}=client(async()=>{if(mode==='offline')throw new TypeError('Failed to fetch');return mode==='failure'?json({code:'DATABASE_UPDATE_REQUIRED',message:'Migrate first.'},503):json([{code:'HR',normalRange:'60–100'}]);});
   await api.getGuides();mode='offline';assert.equal((await api.getGuides())[0].code,'HR');assert.ok(api.cachedGuideDate);
-  mode='failure';await assert.rejects(api.getGuides(),/Migrate first/);
+  mode='failure';await assert.rejects(api.getGuides(),/service is being updated/);
 });
 
 test('simultaneous 401s share one refresh and retry with the rotated token', async()=>{

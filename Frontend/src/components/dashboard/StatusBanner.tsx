@@ -30,8 +30,8 @@ export const StatusBanner: React.FC = () => {
   const statusText = !hasData && openAlerts.length===0 ? 'No data' : isEmergency ? t.statusBanner.emergency : isAttention ? t.statusBanner.attention : t.statusBanner.stable;
   const statusSubtext = openAlerts.length
     ? openAlerts.map(a=>a.reason || a.message).join(' ')
-    : !hasData ? 'No measurements have been loaded from the backend.'
-    : 'Status is based on the latest backend readings. Demo thresholds require mission medical review.';
+    : !hasData ? "تعكس الحالة أحدث القراءات والتنبيهات المفتوحة. اتبع خطة الرعاية الطبية للمهمة."
+    : "Status reflects the latest readings and open alerts. Follow your mission medical plan.";
 
   const textColor = isEmergency
     ? 'text-red-400 drop-shadow-[0_0_14px_rgba(239,68,68,0.5)]'

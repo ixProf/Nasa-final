@@ -216,4 +216,24 @@ public class SymptomGuidanceServiceTests : IDisposable
 
         await Assert.ThrowsAsync<KeyNotFoundException>(() => _service.EvaluateSymptomsAsync(request));
     }
+    [Fact]
+    public async Task IndividualSeverity_DoesNotSpreadToUnrelatedSymptomsOrPatterns()
+    {
+        var result=await _service.EvaluateSymptomsAsync(new(){AstronautId=1,SymptomCodes=["HEADACHE","FATIGUE"],SymptomDetails=[new(){Code="HEADACHE",Severity="severe",DurationHours=30},new(){Code="FATIGUE",Severity="mild"}]});
+        Assert.Equal(2,result.SymptomFindings.Single(s=>s.Code=="HEADACHE").Level);
+        Assert.Equal(1,result.SymptomFindings.Single(s=>s.Code=="FATIGUE").Level);
+        Assert.Equal(1,result.ConditionMatches.Single(c=>c.ConditionCode=="SLEEP_DEFICIENCY").FollowUpLevel);
+        Assert.Equal(2,result.ConditionMatches.Single(c=>c.ConditionCode=="SPACEFLIGHT_VISION_CHANGES").FollowUpLevel);
+        Assert.Empty(_alertService.TriggeredManualAlerts);
+    }
+    [Fact]
+    public async Task CriticalRelatedVital_AlertsDoctorForTargetAstronaut()
+    {
+        _context.VitalSignReadings.Add(new(){AstronautId=1,VitalSignTypeId=4,Value=40,Status=VitalSignStatus.Emergency,RecordedAt=DateTime.UtcNow});
+        await _context.SaveChangesAsync();
+        var result=await _service.EvaluateSymptomsAsync(new(){AstronautId=1,SymptomCodes=["CHILLS"],SymptomDetails=[new(){Code="CHILLS",Severity="mild"}]});
+        Assert.Equal(3,result.Level);Assert.Equal(999,result.TriggeredAlertId);
+        Assert.Equal(1,Assert.Single(_alertService.TriggeredManualAlerts).AstronautId);
+        Assert.Equal(3,result.ConditionMatches.Single().FollowUpLevel);
+    }
 }

@@ -313,8 +313,9 @@ namespace AstronautHealthMonitoring.Migrations
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("Weight")
-                        .HasColumnType("integer");
+                    b.Property<decimal>("Weight")
+                        .HasPrecision(12, 9)
+                        .HasColumnType("numeric(12,9)");
 
                     b.HasKey("Id");
 
@@ -332,63 +333,7 @@ namespace AstronautHealthMonitoring.Migrations
                             ConditionId = 1,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             SymptomId = 1,
-                            Weight = 1
-                        },
-                        new
-                        {
-                            Id = 2,
-                            ConditionId = 1,
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            SymptomId = 2,
-                            Weight = 1
-                        },
-                        new
-                        {
-                            Id = 3,
-                            ConditionId = 2,
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            SymptomId = 5,
-                            Weight = 1
-                        },
-                        new
-                        {
-                            Id = 4,
-                            ConditionId = 3,
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            SymptomId = 6,
-                            Weight = 1
-                        },
-                        new
-                        {
-                            Id = 5,
-                            ConditionId = 3,
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            SymptomId = 7,
-                            Weight = 1
-                        },
-                        new
-                        {
-                            Id = 6,
-                            ConditionId = 3,
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            SymptomId = 8,
-                            Weight = 1
-                        },
-                        new
-                        {
-                            Id = 7,
-                            ConditionId = 3,
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            SymptomId = 18,
-                            Weight = 1
-                        },
-                        new
-                        {
-                            Id = 8,
-                            ConditionId = 3,
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            SymptomId = 10,
-                            Weight = 1
+                            Weight = 0.25m
                         },
                         new
                         {
@@ -396,119 +341,7 @@ namespace AstronautHealthMonitoring.Migrations
                             ConditionId = 4,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             SymptomId = 1,
-                            Weight = 1
-                        },
-                        new
-                        {
-                            Id = 10,
-                            ConditionId = 4,
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            SymptomId = 7,
-                            Weight = 1
-                        },
-                        new
-                        {
-                            Id = 11,
-                            ConditionId = 5,
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            SymptomId = 9,
-                            Weight = 1
-                        },
-                        new
-                        {
-                            Id = 12,
-                            ConditionId = 5,
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            SymptomId = 7,
-                            Weight = 1
-                        },
-                        new
-                        {
-                            Id = 13,
-                            ConditionId = 5,
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            SymptomId = 8,
-                            Weight = 1
-                        },
-                        new
-                        {
-                            Id = 14,
-                            ConditionId = 5,
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            SymptomId = 11,
-                            Weight = 1
-                        },
-                        new
-                        {
-                            Id = 15,
-                            ConditionId = 5,
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            SymptomId = 10,
-                            Weight = 1
-                        },
-                        new
-                        {
-                            Id = 16,
-                            ConditionId = 6,
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            SymptomId = 11,
-                            Weight = 1
-                        },
-                        new
-                        {
-                            Id = 17,
-                            ConditionId = 6,
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            SymptomId = 12,
-                            Weight = 1
-                        },
-                        new
-                        {
-                            Id = 18,
-                            ConditionId = 6,
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            SymptomId = 13,
-                            Weight = 1
-                        },
-                        new
-                        {
-                            Id = 19,
-                            ConditionId = 6,
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            SymptomId = 10,
-                            Weight = 1
-                        },
-                        new
-                        {
-                            Id = 20,
-                            ConditionId = 6,
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            SymptomId = 8,
-                            Weight = 1
-                        },
-                        new
-                        {
-                            Id = 21,
-                            ConditionId = 6,
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            SymptomId = 7,
-                            Weight = 1
-                        },
-                        new
-                        {
-                            Id = 22,
-                            ConditionId = 7,
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            SymptomId = 14,
-                            Weight = 1
-                        },
-                        new
-                        {
-                            Id = 23,
-                            ConditionId = 7,
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            SymptomId = 15,
-                            Weight = 1
+                            Weight = 0.25m
                         },
                         new
                         {
@@ -516,15 +349,103 @@ namespace AstronautHealthMonitoring.Migrations
                             ConditionId = 7,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             SymptomId = 1,
-                            Weight = 1
+                            Weight = 0.25m
                         },
                         new
                         {
-                            Id = 25,
-                            ConditionId = 8,
+                            Id = 30,
+                            ConditionId = 13,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            SymptomId = 16,
-                            Weight = 1
+                            SymptomId = 1,
+                            Weight = 0.25m
+                        },
+                        new
+                        {
+                            Id = 2,
+                            ConditionId = 1,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            SymptomId = 2,
+                            Weight = 1m
+                        },
+                        new
+                        {
+                            Id = 31,
+                            ConditionId = 3,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            SymptomId = 4,
+                            Weight = 0.30m
+                        },
+                        new
+                        {
+                            Id = 3,
+                            ConditionId = 2,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            SymptomId = 5,
+                            Weight = 1m
+                        },
+                        new
+                        {
+                            Id = 32,
+                            ConditionId = 2,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            SymptomId = 21,
+                            Weight = 1m
+                        },
+                        new
+                        {
+                            Id = 33,
+                            ConditionId = 2,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            SymptomId = 6,
+                            Weight = 0.3333333333333333333333333333m
+                        },
+                        new
+                        {
+                            Id = 4,
+                            ConditionId = 3,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            SymptomId = 6,
+                            Weight = 0.3333333333333333333333333333m
+                        },
+                        new
+                        {
+                            Id = 34,
+                            ConditionId = 13,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            SymptomId = 6,
+                            Weight = 0.3333333333333333333333333333m
+                        },
+                        new
+                        {
+                            Id = 5,
+                            ConditionId = 3,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            SymptomId = 7,
+                            Weight = 0.1666666666666666666666666667m
+                        },
+                        new
+                        {
+                            Id = 10,
+                            ConditionId = 4,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            SymptomId = 7,
+                            Weight = 0.1666666666666666666666666667m
+                        },
+                        new
+                        {
+                            Id = 12,
+                            ConditionId = 5,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            SymptomId = 7,
+                            Weight = 0.1666666666666666666666666667m
+                        },
+                        new
+                        {
+                            Id = 21,
+                            ConditionId = 6,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            SymptomId = 7,
+                            Weight = 0.1666666666666666666666666667m
                         },
                         new
                         {
@@ -532,23 +453,7 @@ namespace AstronautHealthMonitoring.Migrations
                             ConditionId = 8,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             SymptomId = 7,
-                            Weight = 1
-                        },
-                        new
-                        {
-                            Id = 27,
-                            ConditionId = 8,
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            SymptomId = 15,
-                            Weight = 1
-                        },
-                        new
-                        {
-                            Id = 28,
-                            ConditionId = 9,
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            SymptomId = 17,
-                            Weight = 1
+                            Weight = 0.1666666666666666666666666667m
                         },
                         new
                         {
@@ -556,7 +461,207 @@ namespace AstronautHealthMonitoring.Migrations
                             ConditionId = 9,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             SymptomId = 7,
-                            Weight = 1
+                            Weight = 0.1666666666666666666666666667m
+                        },
+                        new
+                        {
+                            Id = 6,
+                            ConditionId = 3,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            SymptomId = 8,
+                            Weight = 0.3333333333333333333333333333m
+                        },
+                        new
+                        {
+                            Id = 13,
+                            ConditionId = 5,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            SymptomId = 8,
+                            Weight = 0.3333333333333333333333333333m
+                        },
+                        new
+                        {
+                            Id = 20,
+                            ConditionId = 6,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            SymptomId = 8,
+                            Weight = 0.3333333333333333333333333333m
+                        },
+                        new
+                        {
+                            Id = 11,
+                            ConditionId = 5,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            SymptomId = 9,
+                            Weight = 1m
+                        },
+                        new
+                        {
+                            Id = 8,
+                            ConditionId = 3,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            SymptomId = 10,
+                            Weight = 0.3333333333333333333333333333m
+                        },
+                        new
+                        {
+                            Id = 15,
+                            ConditionId = 5,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            SymptomId = 10,
+                            Weight = 0.3333333333333333333333333333m
+                        },
+                        new
+                        {
+                            Id = 19,
+                            ConditionId = 6,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            SymptomId = 10,
+                            Weight = 0.3333333333333333333333333333m
+                        },
+                        new
+                        {
+                            Id = 14,
+                            ConditionId = 5,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            SymptomId = 11,
+                            Weight = 0.5m
+                        },
+                        new
+                        {
+                            Id = 16,
+                            ConditionId = 6,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            SymptomId = 11,
+                            Weight = 0.5m
+                        },
+                        new
+                        {
+                            Id = 17,
+                            ConditionId = 6,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            SymptomId = 12,
+                            Weight = 1m
+                        },
+                        new
+                        {
+                            Id = 18,
+                            ConditionId = 6,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            SymptomId = 13,
+                            Weight = 1m
+                        },
+                        new
+                        {
+                            Id = 22,
+                            ConditionId = 7,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            SymptomId = 14,
+                            Weight = 1m
+                        },
+                        new
+                        {
+                            Id = 23,
+                            ConditionId = 7,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            SymptomId = 15,
+                            Weight = 0.3333333333333333333333333333m
+                        },
+                        new
+                        {
+                            Id = 27,
+                            ConditionId = 8,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            SymptomId = 15,
+                            Weight = 0.3333333333333333333333333333m
+                        },
+                        new
+                        {
+                            Id = 35,
+                            ConditionId = 13,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            SymptomId = 15,
+                            Weight = 0.3333333333333333333333333333m
+                        },
+                        new
+                        {
+                            Id = 25,
+                            ConditionId = 8,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            SymptomId = 16,
+                            Weight = 1m
+                        },
+                        new
+                        {
+                            Id = 28,
+                            ConditionId = 9,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            SymptomId = 17,
+                            Weight = 1m
+                        },
+                        new
+                        {
+                            Id = 7,
+                            ConditionId = 3,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            SymptomId = 18,
+                            Weight = 1m
+                        },
+                        new
+                        {
+                            Id = 36,
+                            ConditionId = 13,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            SymptomId = 19,
+                            Weight = 1m
+                        },
+                        new
+                        {
+                            Id = 37,
+                            ConditionId = 13,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            SymptomId = 20,
+                            Weight = 0.5m
+                        },
+                        new
+                        {
+                            Id = 38,
+                            ConditionId = 4,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            SymptomId = 20,
+                            Weight = 0.5m
+                        },
+                        new
+                        {
+                            Id = 39,
+                            ConditionId = 3,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            SymptomId = 27,
+                            Weight = 0.5m
+                        },
+                        new
+                        {
+                            Id = 40,
+                            ConditionId = 9,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            SymptomId = 27,
+                            Weight = 0.5m
+                        },
+                        new
+                        {
+                            Id = 41,
+                            ConditionId = 3,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            SymptomId = 28,
+                            Weight = 0.5m
+                        },
+                        new
+                        {
+                            Id = 42,
+                            ConditionId = 9,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            SymptomId = 28,
+                            Weight = 0.5m
                         });
                 });
 
@@ -1467,6 +1572,9 @@ namespace AstronautHealthMonitoring.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
 
+                    b.Property<int?>("ConfidenceCap")
+                        .HasColumnType("integer");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -1474,6 +1582,10 @@ namespace AstronautHealthMonitoring.Migrations
                         .IsRequired()
                         .HasMaxLength(2000)
                         .HasColumnType("character varying(2000)");
+
+                    b.Property<string>("HazardCode")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<bool>("IsMatchable")
                         .HasColumnType("boolean");
@@ -1518,8 +1630,10 @@ namespace AstronautHealthMonitoring.Migrations
                         {
                             Id = 1,
                             Code = "ORTHOSTATIC_INTOLERANCE",
+                            ConfidenceCap = 85,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "May be associated with changes in how body fluids are distributed and how the circulatory system adapts to microgravity, especially when returning to gravity.",
+                            HazardCode = "GRAVITY",
                             IsMatchable = true,
                             Name = "Orthostatic Intolerance",
                             Notes = "SAMPLE CONTENT - pending staff review",
@@ -1531,8 +1645,10 @@ namespace AstronautHealthMonitoring.Migrations
                         {
                             Id = 2,
                             Code = "SPACEFLIGHT_VISION_CHANGES",
+                            ConfidenceCap = 60,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "May be associated with the shift of body fluids toward the head in microgravity.",
+                            HazardCode = "GRAVITY",
                             IsMatchable = true,
                             Name = "Spaceflight-Associated Neuro-ocular Changes",
                             Notes = "SAMPLE CONTENT - pending staff review. Cannot be identified from symptoms or vital signs; needs specialized eye exams.",
@@ -1544,8 +1660,10 @@ namespace AstronautHealthMonitoring.Migrations
                         {
                             Id = 3,
                             Code = "CLOSED_ENVIRONMENT_AIR_QUALITY",
+                            ConfidenceCap = 85,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "May be associated with carbon dioxide levels or other air quality factors in a closed cabin.",
+                            HazardCode = "CLOSED_ENV",
                             IsMatchable = true,
                             Name = "Closed Environment Air Quality Effects",
                             Notes = "SAMPLE CONTENT - pending staff review. Note that CO2 level is environmental data, not a vital sign. Self-care guidance is a placeholder (source does not specify).",
@@ -1557,8 +1675,10 @@ namespace AstronautHealthMonitoring.Migrations
                         {
                             Id = 4,
                             Code = "DEHYDRATION_NUTRITION",
+                            ConfidenceCap = 70,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "May be associated with stored food, nutritional needs, physical activity, and mission conditions that affect fluid and energy balance.",
+                            HazardCode = "CLOSED_ENV",
                             IsMatchable = true,
                             Name = "Hydration and Nutrition Depletion",
                             Notes = "SAMPLE CONTENT - pending staff review",
@@ -1570,8 +1690,10 @@ namespace AstronautHealthMonitoring.Migrations
                         {
                             Id = 5,
                             Code = "SLEEP_DEFICIENCY",
+                            ConfidenceCap = 85,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "May be associated with isolation, stress, day/night cycle changes, work schedule, light and noise.",
+                            HazardCode = "ISOLATION",
                             IsMatchable = true,
                             Name = "Sleep Deficiency",
                             Notes = "SAMPLE CONTENT - pending staff review",
@@ -1583,8 +1705,10 @@ namespace AstronautHealthMonitoring.Migrations
                         {
                             Id = 6,
                             Code = "STRESS_ISOLATION",
+                            ConfidenceCap = 70,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "May be associated with long periods in a small space, distance from family and familiar surroundings, and continuous contact with the same crew.",
+                            HazardCode = "ISOLATION",
                             IsMatchable = true,
                             Name = "Stress and Mission Isolation",
                             Notes = "SAMPLE CONTENT - pending staff review. Never label as depression or anxiety.",
@@ -1596,8 +1720,10 @@ namespace AstronautHealthMonitoring.Migrations
                         {
                             Id = 7,
                             Code = "BLOOD_SUGAR_CHANGE",
+                            ConfidenceCap = 85,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "May be associated with changes in glucose metabolism during spaceflight.",
+                            HazardCode = "CLOSED_ENV",
                             IsMatchable = true,
                             Name = "Blood Glucose Variation",
                             Notes = "SAMPLE CONTENT - pending staff review",
@@ -1609,8 +1735,10 @@ namespace AstronautHealthMonitoring.Migrations
                         {
                             Id = 8,
                             Code = "TEMPERATURE_CHANGE",
+                            ConfidenceCap = 85,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "May be associated with infection, inflammation, heat stress, exercise, or measurement conditions.",
+                            HazardCode = "CLOSED_ENV",
                             IsMatchable = true,
                             Name = "Thermal Regulation Variation",
                             Notes = "SAMPLE CONTENT - pending staff review",
@@ -1622,8 +1750,10 @@ namespace AstronautHealthMonitoring.Migrations
                         {
                             Id = 9,
                             Code = "IMMUNE_SKIN_CHANGES",
+                            ConfidenceCap = 50,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "May be associated with changes in the immune system or skin during spaceflight.",
+                            HazardCode = "CLOSED_ENV",
                             IsMatchable = true,
                             Name = "Immune Dysregulation and Skin Changes",
                             Notes = "SAMPLE CONTENT - pending staff review. Note that temperature alone cannot show immune status.",
@@ -1637,6 +1767,7 @@ namespace AstronautHealthMonitoring.Migrations
                             Code = "BONE_LOSS",
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "May be associated with reduced mechanical load on weight-bearing bones in low gravity.",
+                            HazardCode = "GRAVITY",
                             IsMatchable = false,
                             Name = "Bone Mineral Density Loss",
                             Notes = "SAMPLE CONTENT - pending staff review. Knowledge-only; cannot be evaluated from wearables.",
@@ -1650,6 +1781,7 @@ namespace AstronautHealthMonitoring.Migrations
                             Code = "MUSCLE_ATROPHY",
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "May be associated with reduced use of the muscles that work against gravity.",
+                            HazardCode = "GRAVITY",
                             IsMatchable = false,
                             Name = "Muscle Mass and Strength Loss",
                             Notes = "SAMPLE CONTENT - pending staff review. Knowledge-only; cannot be evaluated from wearables.",
@@ -1663,11 +1795,41 @@ namespace AstronautHealthMonitoring.Migrations
                             Code = "VENOUS_THROMBOEMBOLISM",
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "May be associated with changes in blood flow in the neck (jugular) veins during spaceflight, including slowed, stagnant or reversed flow.",
+                            HazardCode = "GRAVITY",
                             IsMatchable = false,
                             Name = "Internal Jugular Venous Flow Alteration / Thrombosis Risk",
                             Notes = "SAMPLE CONTENT - pending staff review. Knowledge-only; cannot be evaluated from wearables or self-reported symptoms.",
                             SelfCareGuidance = "Requires specialized ultrasound interpreted by medical staff; cannot be detected from heart rate, blood pressure, or self-reported symptoms.",
                             SourceReference = "Research doc 4.7",
+                            WhenToContactMonitor = "Contact a monitor if symptoms are new, persistent, worsening, or readings are repeatedly abnormal."
+                        },
+                        new
+                        {
+                            Id = 13,
+                            Code = "SPACE_MOTION_SICKNESS",
+                            ConfidenceCap = 85,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Symptoms may match early adaptation after a gravity transition.",
+                            HazardCode = "GRAVITY",
+                            IsMatchable = true,
+                            Name = "Space Motion Sickness",
+                            Notes = "SAMPLE CONTENT - pending staff review",
+                            SelfCareGuidance = "Move slowly and avoid abrupt head movements.",
+                            SourceReference = "Symptom-Space Hazard Report v2, sections 3-5",
+                            WhenToContactMonitor = "Contact a monitor if symptoms are new, persistent, worsening, or readings are repeatedly abnormal."
+                        },
+                        new
+                        {
+                            Id = 14,
+                            Code = "RENAL_STONE_RISK",
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Cannot be assessed from symptoms alone; requires specialized assessment within the mission plan.",
+                            HazardCode = "GRAVITY",
+                            IsMatchable = false,
+                            Name = "Renal Stone Risk",
+                            Notes = "SAMPLE CONTENT - pending staff review",
+                            SelfCareGuidance = "Follow the mission plan.",
+                            SourceReference = "Symptom-Space Hazard Report v2",
                             WhenToContactMonitor = "Contact a monitor if symptoms are new, persistent, worsening, or readings are repeatedly abnormal."
                         });
                 });
@@ -1873,6 +2035,132 @@ namespace AstronautHealthMonitoring.Migrations
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             IsRedFlag = false,
                             Name = "Respiratory Irritation / Cough / Congestion"
+                        },
+                        new
+                        {
+                            Id = 19,
+                            BodyArea = "Systemic",
+                            Code = "NAUSEA_VOMITING",
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsRedFlag = false,
+                            Name = "Nausea Vomiting"
+                        },
+                        new
+                        {
+                            Id = 20,
+                            BodyArea = "Systemic",
+                            Code = "LOSS_OF_APPETITE",
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsRedFlag = false,
+                            Name = "Loss Of Appetite"
+                        },
+                        new
+                        {
+                            Id = 21,
+                            BodyArea = "Systemic",
+                            Code = "NEAR_VISION_CHANGE",
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsRedFlag = false,
+                            Name = "Near Vision Change"
+                        },
+                        new
+                        {
+                            Id = 22,
+                            BodyArea = "Systemic",
+                            Code = "FLANK_PAIN_HEMATURIA",
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsRedFlag = true,
+                            Name = "Flank Pain Hematuria"
+                        },
+                        new
+                        {
+                            Id = 23,
+                            BodyArea = "Systemic",
+                            Code = "SEIZURE",
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsRedFlag = true,
+                            Name = "Seizure"
+                        },
+                        new
+                        {
+                            Id = 24,
+                            BodyArea = "Systemic",
+                            Code = "SUDDEN_VISION_LOSS",
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsRedFlag = true,
+                            Name = "Sudden Vision Loss"
+                        },
+                        new
+                        {
+                            Id = 25,
+                            BodyArea = "Systemic",
+                            Code = "SEVERE_SUDDEN_HEADACHE",
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsRedFlag = true,
+                            Name = "Severe Sudden Headache"
+                        },
+                        new
+                        {
+                            Id = 26,
+                            BodyArea = "Systemic",
+                            Code = "CONFUSION_DISORIENTATION",
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsRedFlag = true,
+                            Name = "Confusion Disorientation"
+                        },
+                        new
+                        {
+                            Id = 27,
+                            BodyArea = "Systemic",
+                            Code = "NASAL_CONGESTION",
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsRedFlag = false,
+                            Name = "Nasal Congestion"
+                        },
+                        new
+                        {
+                            Id = 28,
+                            BodyArea = "Systemic",
+                            Code = "EYE_IRRITATION",
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsRedFlag = false,
+                            Name = "Eye Irritation"
+                        },
+                        new
+                        {
+                            Id = 29,
+                            BodyArea = "Systemic",
+                            Code = "MUSCULOSKELETAL_PAIN",
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsRedFlag = false,
+                            Name = "Musculoskeletal Pain"
+                        },
+                        new
+                        {
+                            Id = 30,
+                            BodyArea = "Systemic",
+                            Code = "LIGHT_FLASHES",
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsRedFlag = false,
+                            Name = "Light Flashes"
+                        },
+                        new
+                        {
+                            Id = 31,
+                            BodyArea = "Systemic",
+                            Code = "PALPITATIONS",
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsRedFlag = false,
+                            Name = "Palpitations"
+                        },
+                        new
+                        {
+                            Id = 32,
+                            BodyArea = "Systemic",
+                            Code = "NECK_FACE_SWELLING",
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsRedFlag = false,
+                            Name = "Neck Face Swelling"
                         });
                 });
 

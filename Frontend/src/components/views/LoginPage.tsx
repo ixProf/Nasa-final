@@ -512,8 +512,8 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onSuccessNavigate }) => {
           <Radio className="w-4 h-4 text-cyan-400 shrink-0" />
           <p className="leading-relaxed">
             {tx(isAr
-              ? 'تعتمد المنصة نظام مصادقة JWT مشفر مع عزل كامل لقنوات التيليمتري والمحادثات اللحظية عبر SignalR حسب معرّف رائد الفضاء ودور طبيب الرحلة.'
-              : 'The system enforces isolated JWT identity tokens and segregated SignalR telemetry/chat groups mapped strictly to astronaut IDs and monitor roles.')}
+              ? "سجّل الدخول بحسابك المخصّص للوصول إلى سجلاتك ومحادثاتك الطبية."
+              : "Sign in with your assigned account to access your records and medical conversations.")}
           </p>
         </div>
       </div>

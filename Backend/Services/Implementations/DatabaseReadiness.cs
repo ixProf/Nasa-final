@@ -14,7 +14,8 @@ public class DatabaseReadiness
         {
             using var scope=services.CreateScope();var db=scope.ServiceProvider.GetRequiredService<AppDbContext>();
             PendingMigrations=(await db.Database.GetPendingMigrationsAsync(ct)).ToArray();
-            var migrate=config.GetValue("Database:AutoMigrate",environment.IsDevelopment());
+            // Schema changes are explicit opt-in, including local development.
+            var migrate=config.GetValue("Database:AutoMigrate",false);
             if(PendingMigrations.Length>0 && migrate)
             {
                 logger.LogInformation("Applying {Count} pending database migrations before accepting API requests",PendingMigrations.Length);

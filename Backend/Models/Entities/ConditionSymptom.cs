@@ -13,6 +13,6 @@ public class ConditionSymptom : BaseEntity
     public int SymptomId { get; set; }
     public Symptom Symptom { get; set; } = null!;
 
-    public int Weight { get; set; } = 1;
+    public decimal Weight { get; set; } = 1;
 }
 

@@ -1,5 +1,19 @@
 // Translations of the server's educational catalog, keyed by stable catalog codes.
 export const symptomArabic: Record<string, string> = {
+  NAUSEA_VOMITING: 'الغثيان أو القيء',
+  LOSS_OF_APPETITE: 'فقدان الشهية',
+  NEAR_VISION_CHANGE: 'تغير الرؤية القريبة',
+  FLANK_PAIN_HEMATURIA: 'ألم الخاصرة أو دم في البول',
+  SEIZURE: 'نوبة تشنج',
+  SUDDEN_VISION_LOSS: 'فقدان الرؤية المفاجئ',
+  SEVERE_SUDDEN_HEADACHE: 'صداع مفاجئ شديد',
+  CONFUSION_DISORIENTATION: 'تشوش الوعي أو فقدان الاتجاه',
+  NASAL_CONGESTION: 'احتقان الأنف',
+  EYE_IRRITATION: 'تهيج العين',
+  MUSCULOSKELETAL_PAIN: 'ألم العضلات أو المفاصل',
+  LIGHT_FLASHES: 'ومضات ضوئية',
+  PALPITATIONS: 'الخفقان',
+  NECK_FACE_SWELLING: 'تورم الرقبة أو الوجه',
   DIZZINESS: 'الدوخة أو خفة الرأس', FAINTING: 'الإغماء أو فقدان الوعي', CHEST_PAIN: 'ألم أو ضيق الصدر',
   DIFFICULTY_BREATHING: 'صعوبة التنفس أو ضيق النفس', BLURRED_VISION: 'تشوش الرؤية أو انخفاض حدتها',
   HEADACHE: 'الصداع', FATIGUE: 'التعب أو الإرهاق العام', DIFFICULTY_CONCENTRATING: 'صعوبة التركيز أو التشوش الذهني',
@@ -11,6 +25,8 @@ export const symptomArabic: Record<string, string> = {
 };
 const contact = 'تواصل مع طبيب الرحلة إذا استمرت الأعراض أو ساءت، واتبع إجراءات الطوارئ عند ظهور علامات خطر.';
 export const conditionArabic: Record<string, { nameAr: string; descriptionAr: string; selfCareGuidanceAr: string; whenToContactMonitorAr: string }> = Object.fromEntries([
+  ['SPACE_MOTION_SICKNESS','دوار الحركة الفضائي','نمط قد يرتبط بالتكيف المبكر بعد انتقال الجاذبية.','تحرّك ببطء وتجنب حركات الرأس المفاجئة.'],
+  ['RENAL_STONE_RISK','مخاطر حصوات الكلى','لا يمكن تقييمها من الأعراض وحدها؛ تحتاج فحصًا متخصصًا ضمن خطة المهمة.','اتبع خطة المهمة وتواصل مع المسؤول الطبي.'],
   ['ORTHOSTATIC_INTOLERANCE','عدم تحمل الوقوف','قد يرتبط بتغير توزيع سوائل الجسم وتكيف الدورة الدموية مع انعدام الجاذبية، خاصة عند العودة إلى الجاذبية.','التزم ببرنامج النشاط البدني للمهمة، وأعد قياس ضغط الدم وسجّل وضعية الجسم، وأبلغ طبيب الرحلة.'],
   ['SPACEFLIGHT_VISION_CHANGES','التغيرات العصبية والبصرية المرتبطة برحلات الفضاء','قد ترتبط بانتقال سوائل الجسم نحو الرأس في انعدام الجاذبية.','أبلغ طبيب الرحلة والتزم بفحوص العين المجدولة. لا يمكن تقييم هذه التغيرات من المؤشرات الحيوية وحدها.'],
   ['CLOSED_ENVIRONMENT_AIR_QUALITY','تأثيرات جودة الهواء داخل المقصورة المغلقة','قد ترتبط بتركيز ثاني أكسيد الكربون أو عوامل أخرى تؤثر في جودة الهواء داخل المقصورة.','أبلغ طبيب الرحلة وتحقق من قراءات بيئة المقصورة.'],

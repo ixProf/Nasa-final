@@ -296,29 +296,40 @@ public static class ModelBuilderExtensions
         // 5. Symptoms (Standardized, exactly 3 Red Flags)
         // -------------------------------------------------------------
         modelBuilder.Entity<Symptom>().HasData(
-            new Symptom { Id = 1, Code = "DIZZINESS", Name = "Dizziness / Lightheadedness", BodyArea = "Head / Neurological", IsRedFlag = false, CreatedAt = seedTimeUtc },
-            new Symptom { Id = 2, Code = "FAINTING", Name = "Fainting / Syncope", BodyArea = "Systemic / Cardiovascular", IsRedFlag = true, CreatedAt = seedTimeUtc },
-            new Symptom { Id = 3, Code = "CHEST_PAIN", Name = "Chest Pain / Tightness", BodyArea = "Cardiovascular / Chest", IsRedFlag = true, CreatedAt = seedTimeUtc },
-            new Symptom { Id = 4, Code = "DIFFICULTY_BREATHING", Name = "Difficulty Breathing / Shortness of Breath", BodyArea = "Respiratory", IsRedFlag = true, CreatedAt = seedTimeUtc },
-            new Symptom { Id = 5, Code = "BLURRED_VISION", Name = "Blurred Vision / Visual Acuity Decrease", BodyArea = "Visual / Ocular", IsRedFlag = false, CreatedAt = seedTimeUtc },
-            new Symptom { Id = 6, Code = "HEADACHE", Name = "Headache", BodyArea = "Head / Neurological", IsRedFlag = false, CreatedAt = seedTimeUtc },
-            new Symptom { Id = 7, Code = "FATIGUE", Name = "Fatigue / General Exhaustion", BodyArea = "Systemic", IsRedFlag = false, CreatedAt = seedTimeUtc },
-            new Symptom { Id = 8, Code = "DIFFICULTY_CONCENTRATING", Name = "Difficulty Concentrating / Mental Fog", BodyArea = "Cognitive / Neurological", IsRedFlag = false, CreatedAt = seedTimeUtc },
-            new Symptom { Id = 9, Code = "DAYTIME_SLEEPINESS", Name = "Daytime Sleepiness / Excessive Somnolence", BodyArea = "Systemic", IsRedFlag = false, CreatedAt = seedTimeUtc },
-            new Symptom { Id = 10, Code = "POOR_SLEEP", Name = "Poor Sleep Quality / Frequent Awakenings", BodyArea = "Systemic", IsRedFlag = false, CreatedAt = seedTimeUtc },
-            new Symptom { Id = 11, Code = "INCREASED_STRESS", Name = "Increased Stress / Subjective Tension", BodyArea = "Psychological / Emotional", IsRedFlag = false, CreatedAt = seedTimeUtc },
-            new Symptom { Id = 12, Code = "MOOD_CHANGES", Name = "Mood Changes / Irritability", BodyArea = "Psychological / Emotional", IsRedFlag = false, CreatedAt = seedTimeUtc },
-            new Symptom { Id = 13, Code = "LONELINESS", Name = "Feelings of Isolation / Loneliness", BodyArea = "Psychological / Emotional", IsRedFlag = false, CreatedAt = seedTimeUtc },
-            new Symptom { Id = 14, Code = "TREMOR", Name = "Tremor / Muscle Shaking", BodyArea = "Neurological / Musculoskeletal", IsRedFlag = false, CreatedAt = seedTimeUtc },
-            new Symptom { Id = 15, Code = "SWEATING", Name = "Unusual Sweating / Diaphoresis", BodyArea = "Systemic / Autonomic", IsRedFlag = false, CreatedAt = seedTimeUtc },
-            new Symptom { Id = 16, Code = "CHILLS", Name = "Chills / Shivering", BodyArea = "Systemic / Thermal", IsRedFlag = false, CreatedAt = seedTimeUtc },
-            new Symptom { Id = 17, Code = "SKIN_SYMPTOMS", Name = "Skin Irritation / Rash / Pruritus", BodyArea = "Skin / Dermatological", IsRedFlag = false, CreatedAt = seedTimeUtc },
-            new Symptom { Id = 18, Code = "RESPIRATORY_IRRITATION", Name = "Respiratory Irritation / Cough / Congestion", BodyArea = "Respiratory", IsRedFlag = false, CreatedAt = seedTimeUtc }
+            new Symptom { Id=1, Code="DIZZINESS", Name="Dizziness / Lightheadedness", BodyArea="Head / Neurological", IsRedFlag=false, CreatedAt=seedTimeUtc },
+            new Symptom { Id=2, Code="FAINTING", Name="Fainting / Syncope", BodyArea="Systemic / Cardiovascular", IsRedFlag=true, CreatedAt=seedTimeUtc },
+            new Symptom { Id=3, Code="CHEST_PAIN", Name="Chest Pain / Tightness", BodyArea="Cardiovascular / Chest", IsRedFlag=true, CreatedAt=seedTimeUtc },
+            new Symptom { Id=4, Code="DIFFICULTY_BREATHING", Name="Difficulty Breathing / Shortness of Breath", BodyArea="Respiratory", IsRedFlag=true, CreatedAt=seedTimeUtc },
+            new Symptom { Id=5, Code="BLURRED_VISION", Name="Blurred Vision / Visual Acuity Decrease", BodyArea="Visual / Ocular", IsRedFlag=false, CreatedAt=seedTimeUtc },
+            new Symptom { Id=6, Code="HEADACHE", Name="Headache", BodyArea="Head / Neurological", IsRedFlag=false, CreatedAt=seedTimeUtc },
+            new Symptom { Id=7, Code="FATIGUE", Name="Fatigue / General Exhaustion", BodyArea="Systemic", IsRedFlag=false, CreatedAt=seedTimeUtc },
+            new Symptom { Id=8, Code="DIFFICULTY_CONCENTRATING", Name="Difficulty Concentrating / Mental Fog", BodyArea="Cognitive / Neurological", IsRedFlag=false, CreatedAt=seedTimeUtc },
+            new Symptom { Id=9, Code="DAYTIME_SLEEPINESS", Name="Daytime Sleepiness / Excessive Somnolence", BodyArea="Systemic", IsRedFlag=false, CreatedAt=seedTimeUtc },
+            new Symptom { Id=10, Code="POOR_SLEEP", Name="Poor Sleep Quality / Frequent Awakenings", BodyArea="Systemic", IsRedFlag=false, CreatedAt=seedTimeUtc },
+            new Symptom { Id=11, Code="INCREASED_STRESS", Name="Increased Stress / Subjective Tension", BodyArea="Psychological / Emotional", IsRedFlag=false, CreatedAt=seedTimeUtc },
+            new Symptom { Id=12, Code="MOOD_CHANGES", Name="Mood Changes / Irritability", BodyArea="Psychological / Emotional", IsRedFlag=false, CreatedAt=seedTimeUtc },
+            new Symptom { Id=13, Code="LONELINESS", Name="Feelings of Isolation / Loneliness", BodyArea="Psychological / Emotional", IsRedFlag=false, CreatedAt=seedTimeUtc },
+            new Symptom { Id=14, Code="TREMOR", Name="Tremor / Muscle Shaking", BodyArea="Neurological / Musculoskeletal", IsRedFlag=false, CreatedAt=seedTimeUtc },
+            new Symptom { Id=15, Code="SWEATING", Name="Unusual Sweating / Diaphoresis", BodyArea="Systemic / Autonomic", IsRedFlag=false, CreatedAt=seedTimeUtc },
+            new Symptom { Id=16, Code="CHILLS", Name="Chills / Shivering", BodyArea="Systemic / Thermal", IsRedFlag=false, CreatedAt=seedTimeUtc },
+            new Symptom { Id=17, Code="SKIN_SYMPTOMS", Name="Skin Irritation / Rash / Pruritus", BodyArea="Skin / Dermatological", IsRedFlag=false, CreatedAt=seedTimeUtc },
+            new Symptom { Id=18, Code="RESPIRATORY_IRRITATION", Name="Respiratory Irritation / Cough / Congestion", BodyArea="Respiratory", IsRedFlag=false, CreatedAt=seedTimeUtc },
+            new Symptom { Id=19, Code="NAUSEA_VOMITING", Name="Nausea Vomiting", BodyArea="Systemic", IsRedFlag=false, CreatedAt=seedTimeUtc },
+            new Symptom { Id=20, Code="LOSS_OF_APPETITE", Name="Loss Of Appetite", BodyArea="Systemic", IsRedFlag=false, CreatedAt=seedTimeUtc },
+            new Symptom { Id=21, Code="NEAR_VISION_CHANGE", Name="Near Vision Change", BodyArea="Systemic", IsRedFlag=false, CreatedAt=seedTimeUtc },
+            new Symptom { Id=22, Code="FLANK_PAIN_HEMATURIA", Name="Flank Pain Hematuria", BodyArea="Systemic", IsRedFlag=true, CreatedAt=seedTimeUtc },
+            new Symptom { Id=23, Code="SEIZURE", Name="Seizure", BodyArea="Systemic", IsRedFlag=true, CreatedAt=seedTimeUtc },
+            new Symptom { Id=24, Code="SUDDEN_VISION_LOSS", Name="Sudden Vision Loss", BodyArea="Systemic", IsRedFlag=true, CreatedAt=seedTimeUtc },
+            new Symptom { Id=25, Code="SEVERE_SUDDEN_HEADACHE", Name="Severe Sudden Headache", BodyArea="Systemic", IsRedFlag=true, CreatedAt=seedTimeUtc },
+            new Symptom { Id=26, Code="CONFUSION_DISORIENTATION", Name="Confusion Disorientation", BodyArea="Systemic", IsRedFlag=true, CreatedAt=seedTimeUtc },
+            new Symptom { Id=27, Code="NASAL_CONGESTION", Name="Nasal Congestion", BodyArea="Systemic", IsRedFlag=false, CreatedAt=seedTimeUtc },
+            new Symptom { Id=28, Code="EYE_IRRITATION", Name="Eye Irritation", BodyArea="Systemic", IsRedFlag=false, CreatedAt=seedTimeUtc },
+            new Symptom { Id=29, Code="MUSCULOSKELETAL_PAIN", Name="Musculoskeletal Pain", BodyArea="Systemic", IsRedFlag=false, CreatedAt=seedTimeUtc },
+            new Symptom { Id=30, Code="LIGHT_FLASHES", Name="Light Flashes", BodyArea="Systemic", IsRedFlag=false, CreatedAt=seedTimeUtc },
+            new Symptom { Id=31, Code="PALPITATIONS", Name="Palpitations", BodyArea="Systemic", IsRedFlag=false, CreatedAt=seedTimeUtc },
+            new Symptom { Id=32, Code="NECK_FACE_SWELLING", Name="Neck Face Swelling", BodyArea="Systemic", IsRedFlag=false, CreatedAt=seedTimeUtc }
         );
 
-        // -------------------------------------------------------------
-        // 6. SpaceConditions (Exact SourceReferences and Research-Grounded Text)
-        // -------------------------------------------------------------
         const string defaultWhenToContact = "Contact a monitor if symptoms are new, persistent, worsening, or readings are repeatedly abnormal.";
         const string defaultSampleNote = "SAMPLE CONTENT - pending staff review";
 
@@ -326,6 +337,7 @@ public static class ModelBuilderExtensions
             new SpaceCondition
             {
                 Id = 1,
+                HazardCode = "GRAVITY", ConfidenceCap = 85,
                 Code = "ORTHOSTATIC_INTOLERANCE",
                 Name = "Orthostatic Intolerance",
                 Description = "May be associated with changes in how body fluids are distributed and how the circulatory system adapts to microgravity, especially when returning to gravity.",
@@ -339,6 +351,7 @@ public static class ModelBuilderExtensions
             new SpaceCondition
             {
                 Id = 2,
+                HazardCode = "GRAVITY", ConfidenceCap = 60,
                 Code = "SPACEFLIGHT_VISION_CHANGES",
                 Name = "Spaceflight-Associated Neuro-ocular Changes",
                 Description = "May be associated with the shift of body fluids toward the head in microgravity.",
@@ -352,6 +365,7 @@ public static class ModelBuilderExtensions
             new SpaceCondition
             {
                 Id = 3,
+                HazardCode = "CLOSED_ENV", ConfidenceCap = 85,
                 Code = "CLOSED_ENVIRONMENT_AIR_QUALITY",
                 Name = "Closed Environment Air Quality Effects",
                 Description = "May be associated with carbon dioxide levels or other air quality factors in a closed cabin.",
@@ -365,6 +379,7 @@ public static class ModelBuilderExtensions
             new SpaceCondition
             {
                 Id = 4,
+                HazardCode = "CLOSED_ENV", ConfidenceCap = 70,
                 Code = "DEHYDRATION_NUTRITION",
                 Name = "Hydration and Nutrition Depletion",
                 Description = "May be associated with stored food, nutritional needs, physical activity, and mission conditions that affect fluid and energy balance.",
@@ -378,6 +393,7 @@ public static class ModelBuilderExtensions
             new SpaceCondition
             {
                 Id = 5,
+                HazardCode = "ISOLATION", ConfidenceCap = 85,
                 Code = "SLEEP_DEFICIENCY",
                 Name = "Sleep Deficiency",
                 Description = "May be associated with isolation, stress, day/night cycle changes, work schedule, light and noise.",
@@ -391,6 +407,7 @@ public static class ModelBuilderExtensions
             new SpaceCondition
             {
                 Id = 6,
+                HazardCode = "ISOLATION", ConfidenceCap = 70,
                 Code = "STRESS_ISOLATION",
                 Name = "Stress and Mission Isolation",
                 Description = "May be associated with long periods in a small space, distance from family and familiar surroundings, and continuous contact with the same crew.",
@@ -404,6 +421,7 @@ public static class ModelBuilderExtensions
             new SpaceCondition
             {
                 Id = 7,
+                HazardCode = "CLOSED_ENV", ConfidenceCap = 85,
                 Code = "BLOOD_SUGAR_CHANGE",
                 Name = "Blood Glucose Variation",
                 Description = "May be associated with changes in glucose metabolism during spaceflight.",
@@ -417,6 +435,7 @@ public static class ModelBuilderExtensions
             new SpaceCondition
             {
                 Id = 8,
+                HazardCode = "CLOSED_ENV", ConfidenceCap = 85,
                 Code = "TEMPERATURE_CHANGE",
                 Name = "Thermal Regulation Variation",
                 Description = "May be associated with infection, inflammation, heat stress, exercise, or measurement conditions.",
@@ -430,6 +449,7 @@ public static class ModelBuilderExtensions
             new SpaceCondition
             {
                 Id = 9,
+                HazardCode = "CLOSED_ENV", ConfidenceCap = 50,
                 Code = "IMMUNE_SKIN_CHANGES",
                 Name = "Immune Dysregulation and Skin Changes",
                 Description = "May be associated with changes in the immune system or skin during spaceflight.",
@@ -444,6 +464,7 @@ public static class ModelBuilderExtensions
             new SpaceCondition
             {
                 Id = 10,
+                HazardCode = "GRAVITY", ConfidenceCap = null,
                 Code = "BONE_LOSS",
                 Name = "Bone Mineral Density Loss",
                 Description = "May be associated with reduced mechanical load on weight-bearing bones in low gravity.",
@@ -457,6 +478,7 @@ public static class ModelBuilderExtensions
             new SpaceCondition
             {
                 Id = 11,
+                HazardCode = "GRAVITY", ConfidenceCap = null,
                 Code = "MUSCLE_ATROPHY",
                 Name = "Muscle Mass and Strength Loss",
                 Description = "May be associated with reduced use of the muscles that work against gravity.",
@@ -470,6 +492,7 @@ public static class ModelBuilderExtensions
             new SpaceCondition
             {
                 Id = 12,
+                HazardCode = "GRAVITY", ConfidenceCap = null,
                 Code = "VENOUS_THROMBOEMBOLISM",
                 Name = "Internal Jugular Venous Flow Alteration / Thrombosis Risk",
                 Description = "May be associated with changes in blood flow in the neck (jugular) veins during spaceflight, including slowed, stagnant or reversed flow.",
@@ -479,59 +502,54 @@ public static class ModelBuilderExtensions
                 IsMatchable = false,
                 Notes = "SAMPLE CONTENT - pending staff review. Knowledge-only; cannot be evaluated from wearables or self-reported symptoms.",
                 CreatedAt = seedTimeUtc
-            }
+            },
+            new SpaceCondition {Id=13,Code="SPACE_MOTION_SICKNESS",Name="Space Motion Sickness",HazardCode="GRAVITY",ConfidenceCap=85,Description="Symptoms may match early adaptation after a gravity transition.",SelfCareGuidance="Move slowly and avoid abrupt head movements.",WhenToContactMonitor=defaultWhenToContact,SourceReference="Symptom-Space Hazard Report v2, sections 3-5",Notes=defaultSampleNote,CreatedAt=seedTimeUtc},
+            new SpaceCondition {Id=14,Code="RENAL_STONE_RISK",Name="Renal Stone Risk",HazardCode="GRAVITY",IsMatchable=false,Description="Cannot be assessed from symptoms alone; requires specialized assessment within the mission plan.",SelfCareGuidance="Follow the mission plan.",WhenToContactMonitor=defaultWhenToContact,Notes=defaultSampleNote,SourceReference="Symptom-Space Hazard Report v2",CreatedAt=seedTimeUtc}
         );
 
-        // -------------------------------------------------------------
-        // 7. ConditionSymptoms (Associative mappings)
-        // -------------------------------------------------------------
         modelBuilder.Entity<ConditionSymptom>().HasData(
-            // ORTHOSTATIC_INTOLERANCE (Id 1) -> DIZZINESS (1), FAINTING (2)
-            new ConditionSymptom { Id = 1, ConditionId = 1, SymptomId = 1, Weight = 1, CreatedAt = seedTimeUtc },
-            new ConditionSymptom { Id = 2, ConditionId = 1, SymptomId = 2, Weight = 1, CreatedAt = seedTimeUtc },
-
-            // SPACEFLIGHT_VISION_CHANGES (Id 2) -> BLURRED_VISION (5)
-            new ConditionSymptom { Id = 3, ConditionId = 2, SymptomId = 5, Weight = 1, CreatedAt = seedTimeUtc },
-
-            // CLOSED_ENVIRONMENT_AIR_QUALITY (Id 3) -> HEADACHE (6), FATIGUE (7), DIFFICULTY_CONCENTRATING (8), RESPIRATORY_IRRITATION (18), POOR_SLEEP (10)
-            new ConditionSymptom { Id = 4, ConditionId = 3, SymptomId = 6, Weight = 1, CreatedAt = seedTimeUtc },
-            new ConditionSymptom { Id = 5, ConditionId = 3, SymptomId = 7, Weight = 1, CreatedAt = seedTimeUtc },
-            new ConditionSymptom { Id = 6, ConditionId = 3, SymptomId = 8, Weight = 1, CreatedAt = seedTimeUtc },
-            new ConditionSymptom { Id = 7, ConditionId = 3, SymptomId = 18, Weight = 1, CreatedAt = seedTimeUtc },
-            new ConditionSymptom { Id = 8, ConditionId = 3, SymptomId = 10, Weight = 1, CreatedAt = seedTimeUtc },
-
-            // DEHYDRATION_NUTRITION (Id 4) -> DIZZINESS (1), FATIGUE (7)
-            new ConditionSymptom { Id = 9, ConditionId = 4, SymptomId = 1, Weight = 1, CreatedAt = seedTimeUtc },
-            new ConditionSymptom { Id = 10, ConditionId = 4, SymptomId = 7, Weight = 1, CreatedAt = seedTimeUtc },
-
-            // SLEEP_DEFICIENCY (Id 5) -> DAYTIME_SLEEPINESS (9), FATIGUE (7), DIFFICULTY_CONCENTRATING (8), INCREASED_STRESS (11), POOR_SLEEP (10)
-            new ConditionSymptom { Id = 11, ConditionId = 5, SymptomId = 9, Weight = 1, CreatedAt = seedTimeUtc },
-            new ConditionSymptom { Id = 12, ConditionId = 5, SymptomId = 7, Weight = 1, CreatedAt = seedTimeUtc },
-            new ConditionSymptom { Id = 13, ConditionId = 5, SymptomId = 8, Weight = 1, CreatedAt = seedTimeUtc },
-            new ConditionSymptom { Id = 14, ConditionId = 5, SymptomId = 11, Weight = 1, CreatedAt = seedTimeUtc },
-            new ConditionSymptom { Id = 15, ConditionId = 5, SymptomId = 10, Weight = 1, CreatedAt = seedTimeUtc },
-
-            // STRESS_ISOLATION (Id 6) -> INCREASED_STRESS (11), MOOD_CHANGES (12), LONELINESS (13), POOR_SLEEP (10), DIFFICULTY_CONCENTRATING (8), FATIGUE (7)
-            new ConditionSymptom { Id = 16, ConditionId = 6, SymptomId = 11, Weight = 1, CreatedAt = seedTimeUtc },
-            new ConditionSymptom { Id = 17, ConditionId = 6, SymptomId = 12, Weight = 1, CreatedAt = seedTimeUtc },
-            new ConditionSymptom { Id = 18, ConditionId = 6, SymptomId = 13, Weight = 1, CreatedAt = seedTimeUtc },
-            new ConditionSymptom { Id = 19, ConditionId = 6, SymptomId = 10, Weight = 1, CreatedAt = seedTimeUtc },
-            new ConditionSymptom { Id = 20, ConditionId = 6, SymptomId = 8, Weight = 1, CreatedAt = seedTimeUtc },
-            new ConditionSymptom { Id = 21, ConditionId = 6, SymptomId = 7, Weight = 1, CreatedAt = seedTimeUtc },
-
-            // BLOOD_SUGAR_CHANGE (Id 7) -> TREMOR (14), SWEATING (15), DIZZINESS (1)
-            new ConditionSymptom { Id = 22, ConditionId = 7, SymptomId = 14, Weight = 1, CreatedAt = seedTimeUtc },
-            new ConditionSymptom { Id = 23, ConditionId = 7, SymptomId = 15, Weight = 1, CreatedAt = seedTimeUtc },
-            new ConditionSymptom { Id = 24, ConditionId = 7, SymptomId = 1, Weight = 1, CreatedAt = seedTimeUtc },
-
-            // TEMPERATURE_CHANGE (Id 8) -> CHILLS (16), FATIGUE (7), SWEATING (15)
-            new ConditionSymptom { Id = 25, ConditionId = 8, SymptomId = 16, Weight = 1, CreatedAt = seedTimeUtc },
-            new ConditionSymptom { Id = 26, ConditionId = 8, SymptomId = 7, Weight = 1, CreatedAt = seedTimeUtc },
-            new ConditionSymptom { Id = 27, ConditionId = 8, SymptomId = 15, Weight = 1, CreatedAt = seedTimeUtc },
-
-            // IMMUNE_SKIN_CHANGES (Id 9) -> SKIN_SYMPTOMS (17), FATIGUE (7)
-            new ConditionSymptom { Id = 28, ConditionId = 9, SymptomId = 17, Weight = 1, CreatedAt = seedTimeUtc },
-            new ConditionSymptom { Id = 29, ConditionId = 9, SymptomId = 7, Weight = 1, CreatedAt = seedTimeUtc }
+            new ConditionSymptom {Id=1,ConditionId=1,SymptomId=1,Weight=1m/4m,CreatedAt=seedTimeUtc},
+            new ConditionSymptom {Id=9,ConditionId=4,SymptomId=1,Weight=1m/4m,CreatedAt=seedTimeUtc},
+            new ConditionSymptom {Id=24,ConditionId=7,SymptomId=1,Weight=1m/4m,CreatedAt=seedTimeUtc},
+            new ConditionSymptom {Id=30,ConditionId=13,SymptomId=1,Weight=1m/4m,CreatedAt=seedTimeUtc},
+            new ConditionSymptom {Id=2,ConditionId=1,SymptomId=2,Weight=1m/1m,CreatedAt=seedTimeUtc},
+            new ConditionSymptom {Id=31,ConditionId=3,SymptomId=4,Weight=0.30m,CreatedAt=seedTimeUtc},
+            new ConditionSymptom {Id=3,ConditionId=2,SymptomId=5,Weight=1m/1m,CreatedAt=seedTimeUtc},
+            new ConditionSymptom {Id=32,ConditionId=2,SymptomId=21,Weight=1m/1m,CreatedAt=seedTimeUtc},
+            new ConditionSymptom {Id=33,ConditionId=2,SymptomId=6,Weight=1m/3m,CreatedAt=seedTimeUtc},
+            new ConditionSymptom {Id=4,ConditionId=3,SymptomId=6,Weight=1m/3m,CreatedAt=seedTimeUtc},
+            new ConditionSymptom {Id=34,ConditionId=13,SymptomId=6,Weight=1m/3m,CreatedAt=seedTimeUtc},
+            new ConditionSymptom {Id=5,ConditionId=3,SymptomId=7,Weight=1m/6m,CreatedAt=seedTimeUtc},
+            new ConditionSymptom {Id=10,ConditionId=4,SymptomId=7,Weight=1m/6m,CreatedAt=seedTimeUtc},
+            new ConditionSymptom {Id=12,ConditionId=5,SymptomId=7,Weight=1m/6m,CreatedAt=seedTimeUtc},
+            new ConditionSymptom {Id=21,ConditionId=6,SymptomId=7,Weight=1m/6m,CreatedAt=seedTimeUtc},
+            new ConditionSymptom {Id=26,ConditionId=8,SymptomId=7,Weight=1m/6m,CreatedAt=seedTimeUtc},
+            new ConditionSymptom {Id=29,ConditionId=9,SymptomId=7,Weight=1m/6m,CreatedAt=seedTimeUtc},
+            new ConditionSymptom {Id=6,ConditionId=3,SymptomId=8,Weight=1m/3m,CreatedAt=seedTimeUtc},
+            new ConditionSymptom {Id=13,ConditionId=5,SymptomId=8,Weight=1m/3m,CreatedAt=seedTimeUtc},
+            new ConditionSymptom {Id=20,ConditionId=6,SymptomId=8,Weight=1m/3m,CreatedAt=seedTimeUtc},
+            new ConditionSymptom {Id=11,ConditionId=5,SymptomId=9,Weight=1m/1m,CreatedAt=seedTimeUtc},
+            new ConditionSymptom {Id=8,ConditionId=3,SymptomId=10,Weight=1m/3m,CreatedAt=seedTimeUtc},
+            new ConditionSymptom {Id=15,ConditionId=5,SymptomId=10,Weight=1m/3m,CreatedAt=seedTimeUtc},
+            new ConditionSymptom {Id=19,ConditionId=6,SymptomId=10,Weight=1m/3m,CreatedAt=seedTimeUtc},
+            new ConditionSymptom {Id=14,ConditionId=5,SymptomId=11,Weight=1m/2m,CreatedAt=seedTimeUtc},
+            new ConditionSymptom {Id=16,ConditionId=6,SymptomId=11,Weight=1m/2m,CreatedAt=seedTimeUtc},
+            new ConditionSymptom {Id=17,ConditionId=6,SymptomId=12,Weight=1m/1m,CreatedAt=seedTimeUtc},
+            new ConditionSymptom {Id=18,ConditionId=6,SymptomId=13,Weight=1m/1m,CreatedAt=seedTimeUtc},
+            new ConditionSymptom {Id=22,ConditionId=7,SymptomId=14,Weight=1m/1m,CreatedAt=seedTimeUtc},
+            new ConditionSymptom {Id=23,ConditionId=7,SymptomId=15,Weight=1m/3m,CreatedAt=seedTimeUtc},
+            new ConditionSymptom {Id=27,ConditionId=8,SymptomId=15,Weight=1m/3m,CreatedAt=seedTimeUtc},
+            new ConditionSymptom {Id=35,ConditionId=13,SymptomId=15,Weight=1m/3m,CreatedAt=seedTimeUtc},
+            new ConditionSymptom {Id=25,ConditionId=8,SymptomId=16,Weight=1m/1m,CreatedAt=seedTimeUtc},
+            new ConditionSymptom {Id=28,ConditionId=9,SymptomId=17,Weight=1m/1m,CreatedAt=seedTimeUtc},
+            new ConditionSymptom {Id=7,ConditionId=3,SymptomId=18,Weight=1m/1m,CreatedAt=seedTimeUtc},
+            new ConditionSymptom {Id=36,ConditionId=13,SymptomId=19,Weight=1m/1m,CreatedAt=seedTimeUtc},
+            new ConditionSymptom {Id=37,ConditionId=13,SymptomId=20,Weight=1m/2m,CreatedAt=seedTimeUtc},
+            new ConditionSymptom {Id=38,ConditionId=4,SymptomId=20,Weight=1m/2m,CreatedAt=seedTimeUtc},
+            new ConditionSymptom {Id=39,ConditionId=3,SymptomId=27,Weight=1m/2m,CreatedAt=seedTimeUtc},
+            new ConditionSymptom {Id=40,ConditionId=9,SymptomId=27,Weight=1m/2m,CreatedAt=seedTimeUtc},
+            new ConditionSymptom {Id=41,ConditionId=3,SymptomId=28,Weight=1m/2m,CreatedAt=seedTimeUtc},
+            new ConditionSymptom {Id=42,ConditionId=9,SymptomId=28,Weight=1m/2m,CreatedAt=seedTimeUtc}
         );
 
         // -------------------------------------------------------------

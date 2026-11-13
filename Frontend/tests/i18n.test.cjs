@@ -15,17 +15,17 @@ function load(file){
 }
 const {symptomArabic,conditionArabic}=load('clinical');
 const {translateUiText}=load('uiText');
-test('all 18 server symptom codes have Arabic names',()=>{
+test('all 32 server symptom codes have Arabic names',()=>{
  const seed=fs.readFileSync(path.join(__dirname,'../../Backend/Data/Seed/ModelBuilderExtensions.cs'),'utf8');
- const codes=[...seed.matchAll(/new Symptom \{[^\n]*Code = "([A-Z_]+)"/g)].map(m=>m[1]);
- assert.equal(codes.length,18);
+ const codes=[...seed.matchAll(/new Symptom \{[^\n]*Code\s*=\s*"([A-Z_]+)"/g)].map(m=>m[1]);
+ assert.equal(codes.length,32);
  for(const code of codes){assert.ok(symptomArabic[code],code);assert.doesNotMatch(symptomArabic[code],/[A-Za-z]/);}
 });
-test('all 12 spaceflight conditions have Arabic names, descriptions and guidance',()=>{
- assert.equal(Object.keys(conditionArabic).length,12);
+test('all 14 spaceflight conditions have Arabic names, descriptions and guidance',()=>{
+ assert.equal(Object.keys(conditionArabic).length,14);
  const seed=fs.readFileSync(path.join(__dirname,'../../Backend/Data/Seed/ModelBuilderExtensions.cs'),'utf8');
- const codes=[...seed.matchAll(/new SpaceCondition\s*\{[^}]*?Code = "([A-Z_]+)"/g)].map(m=>m[1]);
- assert.equal(codes.length,12);for(const code of codes)assert.ok(conditionArabic[code],code);
+ const codes=[...seed.matchAll(/new SpaceCondition\s*\{[^}]*?\bCode\s*=\s*"([A-Z_]+)"/g)].map(m=>m[1]);
+ assert.equal(codes.length,14);for(const code of codes)assert.ok(conditionArabic[code],code);
  for(const record of Object.values(conditionArabic))for(const value of Object.values(record)){assert.ok(value.length>5);assert.doesNotMatch(value,/[A-Za-z]/);}
 });
 test('assessment reasons, actions, severity and units translate when Arabic is selected',()=>{

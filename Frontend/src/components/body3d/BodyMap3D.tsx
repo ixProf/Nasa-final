@@ -32,6 +32,7 @@ import React, {
   useCallback,
   useEffect,
   useMemo,
+  useContext,
 } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import {
@@ -42,6 +43,9 @@ import {
   Float,
   Sparkles,
 } from '@react-three/drei';
+import { OrganShape } from './OrganShape';
+import { AnatomySymptomsContext } from './AnatomySymptomsContext';
+import { REGION_SYMPTOMS, organSymptomSeverity, ORGAN_SEVERITY_COLORS } from '../../services/anatomy';
 import * as THREE from 'three';
 import type { GLTF } from 'three-stdlib';
 
@@ -64,6 +68,7 @@ try {
 
 // ─── Candidate Model URLs ─────────────────────────────────────────────────────
 const CANDIDATE_MODEL_PATHS = [
+  '/models/ecorche.glb',
   '/models/human-anatomy.glb',
   '/models/anatomy.glb',
   '/models/body.glb',
@@ -93,10 +98,17 @@ async function verifyGlbAsset(url: string): Promise<boolean> {
       return false;
     }
 
-    const buffer = await res.arrayBuffer();
-    if (buffer.byteLength < 4) return false;
-
-    const bytes = new Uint8Array(buffer);
+    const reader = res.body?.getReader();
+    if (!reader) return false;
+    const prefix: number[] = [];
+    while (prefix.length < 4) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      if (value) prefix.push(...value.subarray(0, 4 - prefix.length));
+    }
+    void reader.cancel();
+    if (prefix.length < 4) return false;
+    const bytes = new Uint8Array(prefix);
     // GLB magic number: 0x46546C67 ('glTF' in little-endian ASCII)
     const isGlb =
       bytes[0] === 0x67 &&
@@ -393,6 +405,62 @@ const AnatomicalModel: React.FC<AnatomicalModelProps> = ({
 };
 
 // ─── Biometric 3D Procedural Hologram (Fallback & Standalone Mode) ───────────
+
+// Keep the original hierarchy and materials of the detailed model intact.
+const EcorcheModel: React.FC<AnatomicalModelProps> = ({ modelUrl, selectedRegionId, onRegionSelect }) => {
+  const gltf = useGLTF(modelUrl);
+  const { camera, size: viewport, controls, invalidate } = useThree();
+  const symptoms = useContext(AnatomySymptomsContext);
+  const { scene, center, size } = useMemo(() => {
+    const scene = gltf.scene.clone(true);
+    scene.updateMatrixWorld(true);
+    const bounds = new THREE.Box3().setFromObject(scene);
+    return { scene, center: bounds.getCenter(new THREE.Vector3()), size: bounds.getSize(new THREE.Vector3()) };
+  }, [gltf.scene]);
+  useEffect(() => {
+    const perspective = camera as THREE.PerspectiveCamera;
+    const tangent = Math.tan(perspective.fov * Math.PI / 360);
+    const aspect = viewport.width / Math.max(1, viewport.height);
+    // Reserve space for the title and credits while fitting both axes.
+    const distance = Math.max(size.y / (.78 * 2 * tangent),
+      Math.max(size.x, size.y * .62) / (.85 * 2 * tangent * aspect)) + size.z;
+    camera.position.set(0, 0.35, distance);
+    camera.lookAt(0, 0.35, 0);
+    camera.near = distance / 100;
+    camera.far = distance * 10;
+    camera.updateProjectionMatrix();
+    const orbit = controls as unknown as { target: THREE.Vector3; update: () => void } | null;
+    orbit?.target.set(0, .35, 0);
+    orbit?.update();
+    invalidate();
+  }, [camera, size, viewport.width, viewport.height, controls, invalidate]);
+
+  // The source contains no organs. These are deliberately schematic overlays,
+  // placed in front of the body rather than implying precise internal anatomy.
+  const organs: Array<{ id: BodyRegionId; x: number; y: number }> = [
+    { id: 'brain', x: 0, y: .95 }, { id: 'eyes', x: 0, y: .90 },
+    { id: 'lungs', x: 0, y: .72 }, { id: 'heart', x: .04, y: .68 },
+    { id: 'stomach', x: .04, y: .58 },
+  ];
+  return <group>
+    <primitive object={scene} position={[-center.x, -center.y + 0.35, -center.z]} />
+    {organs.map(({ id, x, y }) => {
+      const selected = selectedRegionId === id;
+      const linked = symptoms.filter(symptom=>REGION_SYMPTOMS[id].includes(symptom.code));
+      const severity = organSymptomSeverity(id, symptoms);
+      const color = severity ? ORGAN_SEVERITY_COLORS[severity] : selected ? '#67e8f9' : undefined;
+      const organColor: Record<BodyRegionId, string> = {brain:'#c8a4b6', eyes:'#6ca1a3', lungs:'#c58e96', heart:'#bf5262', stomach:'#cba885'};
+      const s = size.y;
+      return <group key={id} position={[x * size.x, (y - 0.5) * size.y + 0.35, size.z * 0.65]}>
+        <group scale={s} onClick={event=>{event.stopPropagation();onRegionSelect(id);}}>
+          <OrganShape id={id} color={color || organColor[id]} active={selected || linked.length>0}/>
+          {linked.length>0 && <mesh scale={id==='lungs'?[.082,.085,.04]:id==='eyes'?[.04,.025,.02]:[.05,.05,.035]} raycast={()=>{}}><sphereGeometry args={[1,24,16]}/><meshBasicMaterial color={color} transparent opacity={.12} depthWrite={false}/></mesh>}
+        </group>
+
+      </group>;
+    })}
+  </group>;
+};
 
 interface BiometricHologramProps {
   selectedRegionId: BodyRegionId | null;
@@ -903,6 +971,9 @@ const ModelLoader: React.FC<ModelLoaderProps> = ({
   onRegionSelect,
   isAr,
 }) => {
+  if (modelUrl?.endsWith('/ecorche.glb')) {
+    return <EcorcheModel modelUrl={modelUrl} selectedRegionId={selectedRegionId} onRegionSelect={onRegionSelect} isAr={isAr} />;
+  }
   if (modelUrl) {
     return (
       <AnatomicalModel
@@ -1027,27 +1098,22 @@ export const BodyMap3D: React.FC<BodyMap3DProps> = ({
           }}
         />
         <span>
-          {tx(verifiedModelUrl
-            ? isAr
-              ? `نموذج ثلاثي الأبعاد نشط: ${verifiedModelUrl.split('/').pop()}`
-              : `Active GLB Model: ${verifiedModelUrl.split('/').pop()}`
-            : isAr
-            ? 'المجسم الحيوي ثلاثي الأبعاد نشط (تفاعلي)'
-            : 'Biometric 3D Hologram active')}
+          {verifiedModelUrl ? (isAr ? 'تشريح تفاعلي' : 'Interactive anatomy') : (isAr ? 'خريطة الجسم' : 'Body map')}
         </span>
       </div>
 
       <Canvas
-        frameloop="always"
+        dpr={[1, 1.5]}
+        frameloop={verifiedModelUrl?.endsWith('/ecorche.glb') ? 'demand' : 'always'}
         shadows
         camera={{ position: [0, 0.4, 3.8], fov: 42, near: 0.1, far: 50 }}
         gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
         style={{ background: 'transparent' }}
       >
         <LightingRig />
-        <Environment preset="night" background={false} />
+        {!verifiedModelUrl?.endsWith('/ecorche.glb') && <Environment preset="night" background={false} />}
 
-        {showParticles && (
+        {showParticles && !verifiedModelUrl?.endsWith('/ecorche.glb') && (
           <Sparkles
             count={45}
             size={0.7}
@@ -1079,14 +1145,18 @@ export const BodyMap3D: React.FC<BodyMap3DProps> = ({
           enablePan={false}
           enableZoom={true}
           enableRotate={true}
-          minDistance={1.8}
-          maxDistance={7}
+          minDistance={0.5}
+          maxDistance={100}
           minPolarAngle={Math.PI / 4}
           maxPolarAngle={(Math.PI * 3) / 4}
           target={[0, 0.35, 0]}
           makeDefault
         />
       </Canvas>
+      {verifiedModelUrl?.endsWith('/ecorche.glb') && <div className="absolute bottom-2 start-2 end-2 z-10 rounded-lg bg-slate-950/90 px-2 py-1 text-[10px] text-slate-300">
+        <span>{isAr ? 'الأعضاء المعروضة توضيحية ومواضعها تقريبية. ' : 'Organ overlays are schematic and approximately positioned. '}</span>
+        <a href="https://github.com/Charleeh/ecorche/blob/main/ATTRIBUTION.md" target="_blank" rel="noreferrer" className="underline text-cyan-300">Écorché · CC BY-SA 4.0</a>
+      </div>}
     </div>
   );
 };

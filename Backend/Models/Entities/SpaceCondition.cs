@@ -8,6 +8,8 @@ namespace AstronautHealthMonitoring.Models.Entities;
 /// </summary>
 public class SpaceCondition : BaseEntity
 {
+    public string HazardCode { get; set; } = string.Empty;
+    public int? ConfidenceCap { get; set; }
     public string Code { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;
 

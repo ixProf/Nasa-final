@@ -224,3 +224,17 @@ body {
   stroke-dasharray: 600;
   animation: ecgDraw 3.5s linear infinite;
 }
+
+@media print {
+  body * { visibility: hidden; }
+  .medical-report, .medical-report * { visibility: visible; color: #111 !important; background: white !important; box-shadow: none !important; text-shadow: none !important; }
+  .medical-report { position: absolute; inset: 0; width: 100%; margin: 0; padding: 12px; border: 0; }
+  .medical-report .report-actions { display: none; }
+  .medical-report .report-table { overflow: visible; }
+  .medical-report table { width: 100%; table-layout: fixed; }
+  .medical-report th, .medical-report td { border-color: #ddd !important; overflow-wrap: anywhere; }
+  .medical-report thead { display: table-header-group; }
+  .medical-report tr { break-inside: avoid; }
+  .medical-report h4 { break-after: avoid; }
+  .medical-report * { animation: none !important; backdrop-filter: none !important; }
+}

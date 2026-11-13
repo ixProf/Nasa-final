@@ -1,4 +1,5 @@
 import { Submissions } from './submissions';
+import { offlineAssociation } from './offlineAssociation';
 import { OfflineMeasurements, MeasurementEndpoint } from './offlineMeasurements';
 import { HabitDashboard } from '../types/habits';
 import { AssignmentReminders, ReminderDelivery } from '../types/reminders';
@@ -193,8 +194,15 @@ class ApiService {
       const publicCodes = ['DATABASE_UPDATE_REQUIRED', 'DATABASE_AUTH_FAILED', 'DATABASE_BUSY', 'DATABASE_UNAVAILABLE', 'REQUEST_FAILED'];
       const isPublicFailure = publicCodes.includes(errorData.code);
       const arabic = localStorage.getItem('nasa_lang') === 'ar';
+      const publicMessages:Record<string,[string,string]>={
+        DATABASE_UPDATE_REQUIRED:['The service is being updated. Please try again shortly.','يجري تحديث الخدمة. حاول مجددًا بعد قليل.'],
+        DATABASE_AUTH_FAILED:['The service is temporarily unavailable. Please contact support.','الخدمة غير متاحة مؤقتًا. تواصل مع الدعم.'],
+        DATABASE_UNAVAILABLE:['We could not connect to the service. Please try again.','تعذّر الاتصال بالخدمة. حاول مجددًا.'],
+        DATABASE_BUSY:['The service is busy. Please try again shortly.','الخدمة مشغولة. حاول مجددًا بعد قليل.'],
+        REQUEST_FAILED:['We could not complete your request. Please try again.','تعذّر إكمال طلبك. حاول مجددًا.']};
+      const publicMessage=publicMessages[errorData.code]?.[arabic?1:0];
       const message = response.status >= 500
-        ? isPublicFailure ? (arabic && errorData.messageAr || errorData.message) : (arabic ? 'تعذّر على الخادم إتمام الطلب. حاول مرة أخرى.' : 'The server could not complete the request. Please retry.')
+        ? isPublicFailure ? (publicMessage || (arabic && errorData.messageAr || errorData.message)) : (arabic ? 'تعذّر على الخادم إتمام الطلب. حاول مرة أخرى.' : 'The server could not complete the request. Please retry.')
         : errorData.message || errorData.detail || validation || errorData.title || `HTTP ${response.status}`;
       const traceId = typeof errorData.traceId === 'string' ? errorData.traceId : response.headers.get('X-Request-ID');
       const error = Object.assign(new Error(message + (traceId ? ` (${arabic ? 'رقم الطلب' : 'Request ID'}: ${traceId})` : '')), {code:errorData.code, status:response.status, traceId});
@@ -351,8 +359,9 @@ class ApiService {
   }
 
   // 4. HealthAlertsController (/api/alerts/*)
-  public async getAlerts(status?: string, severity?: string, astronautId?: number): Promise<any> {
+  public async getAlerts(status?: string, severity?: string, astronautId?: number, pageNumber = 1, pageSize = 20): Promise<any> {
     const params = new URLSearchParams();
+    params.set('pageNumber',String(pageNumber));params.set('pageSize',String(pageSize));
     if (status) params.set('status', status);
     if (severity) params.set('severity', severity);
     if (astronautId) params.set('astronautId', String(astronautId));
@@ -472,24 +481,30 @@ class ApiService {
 
   // 8. SymptomGuidanceController (/api/symptoms/*)
   public async getSymptoms(): Promise<any[]> {
-    return this.request<any[]>('/symptoms');
+    return this.cachedReference('/symptoms');
   }
 
   public async getSpaceConditions(search?: string): Promise<any[]> {
     const qs = search ? `?search=${encodeURIComponent(search)}` : '';
-    return this.request<any[]>(`/symptoms/guidance${qs}`);
+    return search ? this.request<any[]>(`/symptoms/guidance${qs}`) : this.cachedReference('/symptoms/guidance');
   }
 
-  public async assessSymptoms(astronautId: number, symptomCodes: string[], severity = 'mild', durationHours = 0): Promise<any> {
-    return this.request<any>('/symptoms/assess', {
+  public async assessSymptoms(astronautId: number, symptomCodes: string[], severity = 'mild', durationHours = 0, locale: string = 'en', symptomDetails: Array<{code:string;severity:string;durationHours:number}> = []): Promise<any> {
+    try { return await this.request<any>('/symptoms/assess', {
       method: 'POST',
-      body: JSON.stringify({ astronautId, symptomCodes, severity, durationHours }),
-    });
+      body: JSON.stringify({ astronautId, symptomCodes, severity, durationHours, locale, symptomDetails }),
+    }); } catch(error) {
+      if((error as Error).name!=='TypeError')throw error;
+      const read=(path:string)=>JSON.parse(localStorage.getItem('nasa_reference_cache:'+path) || 'null')?.items;
+      const symptoms=read('/symptoms'),conditions=read('/symptoms/guidance');
+      if(!Array.isArray(symptoms)||!Array.isArray(conditions)||!conditions.some(c=>c.code==='SPACE_MOTION_SICKNESS' && c.confidenceCap===85))throw error;
+      return offlineAssociation(symptomCodes,symptoms,conditions,locale,severity,durationHours,symptomDetails);
+    }
   }
 
   // 9. ChatController (/api/chat/*)
-  public async getChatMessages(astronautId?: number, pageSize = 200): Promise<any> {
-    const params = new URLSearchParams({ pageNumber: '1', pageSize: String(pageSize) });
+  public async getChatMessages(astronautId?: number, pageSize = 200, pageNumber = 1): Promise<any> {
+    const params = new URLSearchParams({ pageNumber: String(pageNumber), pageSize: String(pageSize) });
     if (astronautId) params.set('astronautId', String(astronautId));
     return this.request<any>(`/chat/messages?${params.toString()}`);
   }
