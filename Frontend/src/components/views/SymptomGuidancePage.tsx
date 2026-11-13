@@ -55,7 +55,7 @@ export const SymptomGuidancePage: React.FC = () => {
   const [selectedCodes, setSelectedCodes] = useState<string[]>(['HEADACHE']);
   const [assessing, setAssessing] = useState(false);
   const [assessmentError, setAssessmentError] = useState('');
-  const [details,setDetails]=useState<Record<string,{severity:string;durationHours:number}>>({});
+  const [details,setDetails]=useState<Record<string,{severity:string;durationHours:number;durationMinutes:number}>>({});
   const [assessmentResult, setAssessmentResult] = useState<AssociationAssessment | null>(null);
   const assessmentGeneration=useRef(0);
   useEffect(()=>{assessmentGeneration.current++;setAssessing(false);setAssessmentResult(null);setAssessmentError('');},[currentAstronautId,currentRole,selectedChatAstronautId,language]);
@@ -121,12 +121,16 @@ export const SymptomGuidancePage: React.FC = () => {
     setAssessing(true); setAssessmentError(''); setAssessmentResult(null);
     const generation=++assessmentGeneration.current;
     try {
-      const res = await api.assessSymptoms(target, selectedCodes, 'mild', 0, language, selectedCodes.map(code=>({code,...(details[code] || {severity:'mild',durationHours:0})})));
+      const symptomDetails = selectedCodes.map(code => {
+        const value = details[code] || { severity: 'mild', durationHours: 0, durationMinutes: 0 };
+        return { code, severity: value.severity, durationHours: value.durationHours + value.durationMinutes / 60 };
+      });
+      const res = await api.assessSymptoms(target, selectedCodes, 'mild', 0, language, symptomDetails);
       if(generation!==assessmentGeneration.current)return;
       if(res.engineVersion!=='2.0-demo' || !Array.isArray(res.hazardScores))throw new Error(isAr?"التقييم غير متاح مؤقتًا. حاول لاحقًا.":"Assessment is temporarily unavailable. Please try again later.");
       setAssessmentResult(res);
       saveReportAssessment(activeAccount,target,{id:crypto.randomUUID(),recordedAt:new Date().toISOString(),
-        symptoms:selectedCodes.map(code=>({code,name:symptoms.find(s=>s.code===code)?.name || code,nameAr:symptomArabic[code] || code,...(details[code] || {severity:'mild',durationHours:0})})),result:res});
+        symptoms:symptomDetails.map(detail=>({...detail,name:symptoms.find(s=>s.code===detail.code)?.name || detail.code,nameAr:symptomArabic[detail.code] || detail.code})),result:res});
     } catch (error) { if(generation===assessmentGeneration.current)setAssessmentError(error instanceof Error ? error.message : 'Assessment failed. Please retry.'); }
     finally { if(generation===assessmentGeneration.current)setAssessing(false); }
   };
@@ -221,10 +225,11 @@ export const SymptomGuidancePage: React.FC = () => {
 
         {assessmentError && <p role="alert" className="mb-3 text-rose-300">{tx(assessmentError)}</p>}
         <div className="grid md:grid-cols-2 gap-3 mb-4">
-          {selectedCodes.map(code=>{const value=details[code] || {severity:'mild',durationHours:0};const update=(change:Partial<typeof value>)=>{assessmentGeneration.current++;setAssessmentResult(null);setAssessing(false);setDetails(old=>({...old,[code]:{...value,...change}}));};
+          {selectedCodes.map(code=>{const value=details[code] || {severity:'mild',durationHours:0,durationMinutes:0};const update=(change:Partial<typeof value>)=>{assessmentGeneration.current++;setAssessmentResult(null);setAssessing(false);setDetails(old=>({...old,[code]:{...value,...change}}));};
           return <div key={code} className="rounded-xl border border-cyan-400/20 p-3 space-y-2"><strong>{isAr?symptomArabic[code] || code:symptoms.find(s=>s.code===code)?.name || code}</strong><div className="flex gap-3 flex-wrap">
             <label>{isAr?'شدة هذا العرض':'This symptom’s intensity'}<select aria-label={(isAr?'شدة ':'Intensity ')+code} className="bg-slate-900 p-2 ms-2" value={value.severity} onChange={e=>update({severity:e.target.value})}><option value="mild">{isAr?'خفيفة':'Mild'}</option><option value="moderate">{isAr?'متوسطة':'Moderate'}</option><option value="severe">{isAr?'شديدة':'Severe'}</option></select></label>
-            <label>{isAr?'المدة بالساعات':'Duration in hours'}<input aria-label={(isAr?'مدة ':'Duration ')+code} className="bg-slate-900 p-2 w-24 ms-2" type="number" min="0" max="8760" value={value.durationHours} onChange={e=>update({durationHours:Number(e.target.value)})}/></label>
+            <label>{isAr?'المدة بالساعات':'Duration in hours'}<input aria-label={(isAr?'المدة بالساعات ':'Duration in hours ')+code} className="bg-slate-900 p-2 w-24 ms-2" type="number" min="0" max="8760" step="1" value={value.durationHours} onChange={e=>{const hours=Math.min(8760, Math.max(0, Math.trunc(Number(e.target.value) || 0))); update({durationHours:hours, ...(hours === 8760 ? {durationMinutes:0} : {})});}}/></label>
+            <label>{isAr?'الدقائق':'Minutes'}<input aria-label={(isAr?'الدقائق ':'Minutes ')+code} className="bg-slate-900 p-2 w-24 ms-2" type="number" min="0" max={value.durationHours === 8760 ? 0 : 59} step="1" value={value.durationMinutes} onChange={e=>update({durationMinutes:Math.min(value.durationHours === 8760 ? 0 : 59, Math.max(0, Math.trunc(Number(e.target.value) || 0)))})}/></label>
           </div></div>;})}
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">

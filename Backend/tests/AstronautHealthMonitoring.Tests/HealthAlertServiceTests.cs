@@ -15,6 +15,64 @@ namespace AstronautHealthMonitoring.Tests;
 
 public class HealthAlertServiceTests : IDisposable
 {
+    private static TriggerManualAlertRequest AssessmentRequest(int astronautId = 1, string symptom = "Chest pain") => new()
+    {
+        AstronautId = astronautId, ReuseOpenAssessmentAlert = true,
+        Severity = AlertSeverity.Emergency, Title = "Red-Flag Symptom Escalation",
+        Message = $"Reported: {symptom}",
+        Reason = "Automated escalation triggered by symptom guidance assessment detecting red-flag clinical signs."
+    };
+
+    [Fact]
+    public async Task RepeatedAssessment_ReusesAcknowledgedAlert_ThenCreatesNewEpisodeAfterResolution()
+    {
+        var first = await _healthAlertService.TriggerManualAlertAsync(AssessmentRequest());
+        var repeated = await _healthAlertService.TriggerManualAlertAsync(AssessmentRequest());
+        Assert.Equal(first.Id, repeated.Id);
+        _currentUserService.Role = UserRoles.Monitor;
+        await _healthAlertService.AcknowledgeAlertAsync(first.Id, new() { ActionTaken = "Reviewing" }, "monitor");
+        repeated = await _healthAlertService.TriggerManualAlertAsync(AssessmentRequest());
+        Assert.Equal(first.Id, repeated.Id);
+        Assert.Equal(AlertStatus.Acknowledged, repeated.Status);
+        await _healthAlertService.ResolveAlertAsync(first.Id, new() { ResolutionNotes = "Reviewed" }, "monitor");
+        var next = await _healthAlertService.TriggerManualAlertAsync(AssessmentRequest());
+        Assert.NotEqual(first.Id, next.Id);
+        Assert.Equal(AlertStatus.Active, next.Status);
+        Assert.Equal(AlertStatus.Resolved, (await _context.HealthAlerts.FindAsync(first.Id))!.Status);
+    }
+
+    [Fact]
+    public async Task AssessmentGrouping_DoesNotMergeOtherSymptomsAstronautsOrManualReports()
+    {
+        _currentUserService.Role = UserRoles.Monitor;
+        await _healthAlertService.TriggerManualAlertAsync(AssessmentRequest());
+        await _healthAlertService.TriggerManualAlertAsync(AssessmentRequest(2));
+        await _healthAlertService.TriggerManualAlertAsync(AssessmentRequest(symptom: "Severe breathlessness"));
+        var manual = AssessmentRequest(); manual.ReuseOpenAssessmentAlert = false;
+        await _healthAlertService.TriggerManualAlertAsync(manual);
+        Assert.Equal(4, await _context.HealthAlerts.CountAsync());
+    }
+
+    [Fact]
+    public async Task ResolveAssessment_ClosesLegacyDuplicates_PreservesHistoryAndUnrelatedIssues()
+    {
+        _currentUserService.Role = UserRoles.Monitor;
+        var first = await _healthAlertService.TriggerManualAlertAsync(AssessmentRequest());
+        var duplicateRequest = AssessmentRequest(); duplicateRequest.ReuseOpenAssessmentAlert = false;
+        var duplicate = await _healthAlertService.TriggerManualAlertAsync(duplicateRequest);
+        var other = await _healthAlertService.TriggerManualAlertAsync(AssessmentRequest(2));
+        var different = await _healthAlertService.TriggerManualAlertAsync(AssessmentRequest(symptom: "Different symptoms"));
+        await _healthAlertService.ResolveAlertAsync(first.Id, new() { ResolutionNotes = "Issue reviewed" }, "monitor");
+        Assert.Equal(4, await _context.HealthAlerts.CountAsync());
+        Assert.Equal(AlertStatus.Resolved, (await _context.HealthAlerts.FindAsync(duplicate.Id))!.Status);
+        Assert.Equal(AlertStatus.Active, (await _context.HealthAlerts.FindAsync(other.Id))!.Status);
+        Assert.Equal(AlertStatus.Active, (await _context.HealthAlerts.FindAsync(different.Id))!.Status);
+        // A delayed acknowledgment cannot reopen an episode or overwrite its resolution notes.
+        var acknowledged = await _healthAlertService.AcknowledgeAlertAsync(first.Id, new() { ActionTaken = "Late" }, "monitor");
+        Assert.Equal(AlertStatus.Resolved, acknowledged.Status);
+        Assert.Contains("Issue reviewed", acknowledged.ActionTaken);
+    }
+
     private readonly AppDbContext _context;
     private readonly TestCurrentUserService _currentUserService;
     private readonly IMapper _mapper;

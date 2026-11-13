@@ -119,10 +119,11 @@ public class SymptomGuidanceService : ISymptomGuidanceService
             {
                 var alert = await _healthAlertService.TriggerManualAlertAsync(new TriggerManualAlertRequest
                 {
+                    ReuseOpenAssessmentAlert = true,
                     AstronautId = astronaut.Id,
                     Severity = AlertSeverity.Emergency,
                     Title = "Red-Flag Symptom Escalation",
-                    Message = $"Astronaut '{astronaut.AstronautCode}' reported red-flag symptom(s): {string.Join(", ", redFlags.Select(rf => rf.Name))}.",
+                    Message = $"Astronaut '{astronaut.AstronautCode}' reported red-flag symptom(s): {string.Join(", ", redFlags.OrderBy(rf => rf.Code).Select(rf => rf.Name))}.",
                     Reason = "Automated escalation triggered by symptom guidance assessment detecting red-flag clinical signs.",
                     ActionRequired = "Immediate crew check and flight surgeon evaluation required."
                 }, cancellationToken);
@@ -159,9 +160,10 @@ public class SymptomGuidanceService : ISymptomGuidanceService
         SymptomFindingClassifier.Apply(response,request,symptoms,conditions,latestReadings,latestSleep?.DurationHours);
         if(response.Level==3 && !response.TriggeredAlertId.HasValue && redFlags.Count==0)
         {
-            var critical=string.Join(", ",response.ConditionMatches.Where(c=>c.FollowUpLevel==3).Select(c=>c.ConditionCode));
+            var critical=string.Join(", ",response.ConditionMatches.Where(c=>c.FollowUpLevel==3).Select(c=>c.ConditionCode).OrderBy(code=>code));
             try {
                 var alert=await _healthAlertService.TriggerManualAlertAsync(new TriggerManualAlertRequest {
+                    ReuseOpenAssessmentAlert=true,
                     AstronautId=astronaut.Id,Severity=AlertSeverity.Emergency,Title="Critical Assessment Finding",
                     Message=$"Critical findings require medical review: {critical}",Reason="A matching symptom pattern has a related recent emergency vital reading.",
                     ActionRequired="Alert crew and the medical officer now and follow the mission emergency protocol."

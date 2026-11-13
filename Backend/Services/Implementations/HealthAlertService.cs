@@ -201,6 +201,30 @@ public class HealthAlertService : IHealthAlertService
             throw new InvalidOperationException($"Astronaut '{astronaut.AstronautCode}' is deactivated and cannot trigger or receive alerts.");
         }
 
+        // Serialize assessment creation for this astronaut, including across server instances.
+        // No schema change is needed: the existing source, message and severity identify the issue.
+        await using var transaction = request.ReuseOpenAssessmentAlert && _dbContext.Database.IsNpgsql()
+            ? await _dbContext.Database.BeginTransactionAsync(cancellationToken) : null;
+        if (transaction != null)
+            await _dbContext.Database.ExecuteSqlInterpolatedAsync(
+                $"SELECT \"Id\" FROM \"Astronauts\" WHERE \"Id\" = {targetAstronautId} FOR UPDATE", cancellationToken);
+
+        if (request.ReuseOpenAssessmentAlert)
+        {
+            var existing = await _dbContext.HealthAlerts
+                .Include(a => a.Astronaut).Include(a => a.EmergencyProcedure)
+                .Where(a => a.AstronautId == targetAstronautId && a.Status != AlertStatus.Resolved
+                    && a.Title == request.Title && a.Message == request.Message
+                    && a.Reason == request.Reason && a.Severity == request.Severity)
+                .OrderBy(a => a.TriggeredAt).ThenBy(a => a.Id)
+                .FirstOrDefaultAsync(cancellationToken);
+            if (existing != null)
+            {
+                if (transaction != null) await transaction.CommitAsync(cancellationToken);
+                return _mapper.Map<HealthAlertDto>(existing);
+            }
+        }
+
         var alert = new HealthAlert
         {
             AstronautId = targetAstronautId,
@@ -217,6 +241,7 @@ public class HealthAlertService : IHealthAlertService
 
         _dbContext.HealthAlerts.Add(alert);
         await _dbContext.SaveChangesAsync(cancellationToken);
+        if (transaction != null) await transaction.CommitAsync(cancellationToken);
 
         // Load navigations for complete DTO
         await _dbContext.Entry(alert).Reference(a => a.Astronaut).LoadAsync(cancellationToken);
@@ -377,6 +402,8 @@ public class HealthAlertService : IHealthAlertService
             throw new KeyNotFoundException($"HealthAlert with ID {alertId} not found.");
         }
 
+        // A delayed acknowledge request must never reopen a resolved alert.
+        if (alert.Status != AlertStatus.Active) return _mapper.Map<HealthAlertDto>(alert);
         alert.Status = AlertStatus.Acknowledged;
         alert.AcknowledgedAt = DateTime.UtcNow;
         alert.AcknowledgedBy = !string.IsNullOrWhiteSpace(monitorUserId) ? monitorUserId : _currentUserService.UserId;
@@ -421,21 +448,36 @@ public class HealthAlertService : IHealthAlertService
             throw new KeyNotFoundException($"HealthAlert with ID {alertId} not found.");
         }
 
-        alert.Status = AlertStatus.Resolved;
-        if (!alert.AcknowledgedAt.HasValue)
+        if (alert.Status == AlertStatus.Resolved) return _mapper.Map<HealthAlertDto>(alert);
+
+        var alertsToResolve = new List<HealthAlert> { alert };
+        var isAssessment =
+            (alert.Title == "Red-Flag Symptom Escalation" && alert.Reason == "Automated escalation triggered by symptom guidance assessment detecting red-flag clinical signs.") ||
+            (alert.Title == "Critical Assessment Finding" && alert.Reason == "A matching symptom pattern has a related recent emergency vital reading.");
+        if (isAssessment)
         {
-            alert.AcknowledgedAt = DateTime.UtcNow;
-            alert.AcknowledgedBy = !string.IsNullOrWhiteSpace(monitorUserId) ? monitorUserId : _currentUserService.UserId;
+            // Preserve legacy duplicates in history, closing only this exact issue for this astronaut.
+            alertsToResolve.AddRange(await _dbContext.HealthAlerts
+                .Include(a => a.Astronaut).Include(a => a.EmergencyProcedure)
+                .Where(a => a.Id != alert.Id && a.AstronautId == alert.AstronautId
+                    && a.Status != AlertStatus.Resolved && a.Title == alert.Title
+                    && a.Message == alert.Message && a.Reason == alert.Reason && a.Severity == alert.Severity)
+                .ToListAsync(cancellationToken));
         }
 
-        if (!string.IsNullOrWhiteSpace(request?.ResolutionNotes))
+        foreach (var item in alertsToResolve)
         {
-            alert.ActionTaken = string.IsNullOrWhiteSpace(alert.ActionTaken)
-                ? request.ResolutionNotes
-                : $"{alert.ActionTaken} | Resolved: {request.ResolutionNotes}";
+            item.Status = AlertStatus.Resolved;
+            if (!item.AcknowledgedAt.HasValue)
+            {
+                item.AcknowledgedAt = DateTime.UtcNow;
+                item.AcknowledgedBy = !string.IsNullOrWhiteSpace(monitorUserId) ? monitorUserId : _currentUserService.UserId;
+            }
+            if (!string.IsNullOrWhiteSpace(request?.ResolutionNotes))
+                item.ActionTaken = string.IsNullOrWhiteSpace(item.ActionTaken)
+                    ? request.ResolutionNotes : $"{item.ActionTaken} | Resolved: {request.ResolutionNotes}";
+            item.UpdatedAt = DateTime.UtcNow;
         }
-
-        alert.UpdatedAt = DateTime.UtcNow;
 
         await _dbContext.SaveChangesAsync(cancellationToken);
 
@@ -445,7 +487,8 @@ public class HealthAlertService : IHealthAlertService
         {
             try
             {
-                await _alertNotifier.NotifyAlertResolvedAsync(resolvedDto, cancellationToken);
+                foreach (var item in alertsToResolve)
+                    await _alertNotifier.NotifyAlertResolvedAsync(_mapper.Map<HealthAlertDto>(item), cancellationToken);
             }
             catch (Exception ex)
             {

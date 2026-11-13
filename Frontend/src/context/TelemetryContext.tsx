@@ -1,4 +1,5 @@
 import { reportError } from '../services/errors';
+import { applyResolvedAlert } from '../services/alertLifecycle';
 import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 import {
   VitalSignCardData,
@@ -979,6 +980,7 @@ export const TelemetryProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
     const unsubAlert = signalRService.onAlertReceived((incomingAlert) => {
       setAlerts((prev) => {
+        if (incomingAlert.status === 'Resolved') return applyResolvedAlert(prev, incomingAlert);
         const idx = prev.findIndex((a) => a.id === incomingAlert.id);
         if (idx >= 0) {
           const copy = [...prev];
@@ -1195,7 +1197,7 @@ export const TelemetryProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     catch (error) { reportError(error); throw error; }
   };
   const resolveAlert = async (id:number,notes:string) => {
-    try { const saved = await api.resolveAlert(id,notes); setAlerts(prev=>prev.map(a=>a.id===id?saved:a)); }
+    try { const saved = await api.resolveAlert(id,notes); setAlerts(prev=>applyResolvedAlert(prev,saved)); }
     catch (error) { reportError(error); throw error; }
   };
 

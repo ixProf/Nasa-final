@@ -169,6 +169,7 @@ public class SymptomGuidanceServiceTests : IDisposable
         Assert.Single(_alertService.TriggeredManualAlerts);
         Assert.Equal(1, _alertService.TriggeredManualAlerts[0].AstronautId);
         Assert.Equal(AlertSeverity.Emergency, _alertService.TriggeredManualAlerts[0].Severity);
+        Assert.True(_alertService.TriggeredManualAlerts[0].ReuseOpenAssessmentAlert);
     }
 
     [Fact]

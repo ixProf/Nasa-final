@@ -112,6 +112,7 @@ class ApiService {
     return this.submissions.run('/habits/' + id + '/complete', () => this.request<HabitDashboard>('/habits/' + id + '/complete', { method: 'POST' }).then(result => { window.dispatchEvent(new CustomEvent('app:assignment-completed',{detail:id})); window.dispatchEvent(new Event('app:reminders-refresh')); return result; }));
   }
   private refreshInFlight: Promise<boolean> | null = null;
+  private sessionRevision = 0;
   private accessToken: string | null = localStorage.getItem('nasa_access_token');
   private refreshToken: string | null = localStorage.getItem('nasa_refresh_token');
 
@@ -123,6 +124,7 @@ class ApiService {
   }
 
   public clearTokens() {
+    this.sessionRevision++;
     this.submissions.clear();
     this.accessToken = null;
     this.refreshToken = null;
@@ -163,6 +165,7 @@ class ApiService {
       options = { ...options, body: JSON.stringify(convertContract(JSON.parse(options.body), endpoint, true)) };
     }
     const tokenAtRequest = this.accessToken;
+    const revisionAtRequest = this.sessionRevision;
     const url = `${API_BASE}${endpoint}`;
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
@@ -175,16 +178,16 @@ class ApiService {
 
     let response = await fetch(url, { ...options, headers });
 
-    if (response.status === 401 && this.refreshToken && !['/auth/login', '/auth/refresh', '/auth/logout'].includes(endpoint)) {
+    if (response.status === 401 && revisionAtRequest === this.sessionRevision && this.refreshToken && !['/auth/login', '/auth/refresh', '/auth/logout'].includes(endpoint)) {
       const refreshed = this.accessToken !== tokenAtRequest || await this.refreshTokens();
-      if (refreshed && this.accessToken) {
+      if (refreshed && revisionAtRequest === this.sessionRevision && this.accessToken) {
         headers['Authorization'] = `Bearer ${this.accessToken}`;
         response = await fetch(url, { ...options, headers });
       }
     }
 
     if (!response.ok) {
-      if (response.status === 401 && !endpoint.startsWith('/auth/') && (!this.accessToken || this.accessToken === tokenAtRequest)) {
+      if (response.status === 401 && !endpoint.startsWith('/auth/') && (revisionAtRequest === this.sessionRevision || !this.accessToken)) {
         window.dispatchEvent(new Event('app:unauthorized'));
       }
       const errorData = await response.json().catch(() => ({}));

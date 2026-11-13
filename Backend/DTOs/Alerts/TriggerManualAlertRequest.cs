@@ -7,6 +7,10 @@ namespace AstronautHealthMonitoring.DTOs.Alerts;
 /// </summary>
 public class TriggerManualAlertRequest
 {
+    // Only assessment code may request reuse; this is not a client-controlled option.
+    [System.Text.Json.Serialization.JsonIgnore]
+    public bool ReuseOpenAssessmentAlert { get; set; }
+
     /// <summary>
     /// Target astronaut ID. Ignored for astronaut callers (automatically scoped to self).
     /// </summary>

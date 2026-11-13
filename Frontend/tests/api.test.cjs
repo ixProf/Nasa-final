@@ -126,6 +126,18 @@ test('logout during refresh does not resurrect the previous session',async()=>{
   assert.equal(api.getAccessToken(),null);
 });
 
+test('a delayed logout cannot clear a subsequent signed-in session',async()=>{
+  let release;
+  const {api}=client(async()=>new Promise(resolve=>{release=()=>resolve(json({}));}));
+  api.setTokens('old','old-refresh');
+  const logout=api.logout();
+  assert.equal(api.getAccessToken(),null);
+  api.setTokens('new','new-refresh');
+  release();
+  await logout;
+  assert.equal(api.getAccessToken(),'new');
+});
+
 
 test('hosted numeric enum contract is converted in both directions',async()=>{
  let payload;

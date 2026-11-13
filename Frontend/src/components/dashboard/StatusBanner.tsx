@@ -3,6 +3,7 @@ import React from 'react';
 import { Check, AlertTriangle, AlertCircle, Radio, Sparkles } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
 import { useTelemetry } from '../../context/TelemetryContext';
+import { openAlertMessages } from '../../services/alertLifecycle';
 
 export const StatusBanner: React.FC = () => {
   const tx = useUiText();
@@ -27,9 +28,10 @@ export const StatusBanner: React.FC = () => {
 
   const hasData = Object.values(vitals).some(v=>v.value !== 'No data');
   const openAlerts = alerts.filter(a=>a.status!=='Resolved');
+  const alertMessages = openAlertMessages(alerts);
   const statusText = !hasData && openAlerts.length===0 ? 'No data' : isEmergency ? t.statusBanner.emergency : isAttention ? t.statusBanner.attention : t.statusBanner.stable;
   const statusSubtext = openAlerts.length
-    ? openAlerts.map(a=>a.reason || a.message).join(' ')
+    ? alertMessages.slice(0, 3).join('\n') + (alertMessages.length > 3 ? (isAr ? `\nو${alertMessages.length - 3} تنبيهات أخرى` : `\n${alertMessages.length - 3} more alerts`) : '')
     : !hasData ? "تعكس الحالة أحدث القراءات والتنبيهات المفتوحة. اتبع خطة الرعاية الطبية للمهمة."
     : "Status reflects the latest readings and open alerts. Follow your mission medical plan.";
 
@@ -81,9 +83,12 @@ export const StatusBanner: React.FC = () => {
           <div className={`text-2xl md:text-3xl font-extrabold leading-tight mt-0.5 ${textColor}`}>
             {tx(statusText)}
           </div>
-          <p className="text-xs md:text-sm text-slate-300 font-medium mt-1">
+          <p className="text-xs md:text-sm text-slate-300 font-medium mt-1 whitespace-pre-line">
             {tx(statusSubtext)}
           </p>
+          {openAlerts.length > 0 && <p className="text-xs text-slate-400 mt-2">
+            {isAr ? 'يبقى التنبيه حتى يراجعه المراقب ويُنهيه. تأكيد الاستلام لا يُنهي التنبيه.' : 'Open alerts remain until a monitor reviews and resolves them. Acknowledging confirms receipt.'}
+          </p>}
         </div>
       </div>
 
