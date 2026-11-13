@@ -9,32 +9,14 @@ import {
   Check,
   Stethoscope,
   Users,
-  Radio,
   User,
-  Shield,
   Clock,
   Sparkles,
-  UserCheck,
-  Building2,
-  BrainCircuit,
-  ArrowRight,
 } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
 import { useTelemetry } from '../../context/TelemetryContext';
 
-interface RecipientOption {
-  id: string;
-  role: 'Astronaut' | 'Monitor';
-  astronautId?: number;
-  titleAr: string;
-  titleEn: string;
-  roleLabelAr: string;
-  roleLabelEn: string;
-  badgeAr: string;
-  badgeEn: string;
-  iconType: 'doctor' | 'control' | 'behavioral' | 'astronaut';
-  code: string;
-}
+import { chatRecipients, type ChatRecipient as RecipientOption } from '../../services/chatRouting';
 
 export const GroundOrbitChatPage: React.FC = () => {
   const tx = useUiText();
@@ -46,7 +28,6 @@ export const GroundOrbitChatPage: React.FC = () => {
     currentRole,
     currentUserName,
     currentUserCode,
-    activeAccount,
     selectedChatAstronautId,
     setSelectedChatAstronautId,
     crewMembers,
@@ -59,146 +40,27 @@ export const GroundOrbitChatPage: React.FC = () => {
   const [sending, setSending] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // All prospective recipients available across the mission network
-  const allRecipients: RecipientOption[] = [
-    {
-      id: 'doctor-rivera',
-      role: 'Monitor',
-      titleAr: 'د. كيسي ريفيرا',
-      titleEn: 'Dr. Casey Rivera',
-      roleLabelAr: 'طبيب الرحلة الرئيسي',
-      roleLabelEn: 'Lead Flight Surgeon',
-      badgeAr: 'المركز الطبي الأرضي',
-      badgeEn: 'Ground Medical Desk',
-      iconType: 'doctor',
-      code: 'MED-SURGEON',
-      astronautId: 1,
-    },
-    {
-      id: 'mcc-ground',
-      role: 'Monitor',
-      titleAr: 'مركز العمليات الطبية - هيوستن',
-      titleEn: 'Mission Control Medical Console',
-      roleLabelAr: 'غرفة الدعم الطبي الأرضي المستمر',
-      roleLabelEn: 'Continuous Medical Operations Desk',
-      badgeAr: 'مركز المراقبة MCC',
-      badgeEn: 'Flight Ops Desk',
-      iconType: 'control',
-      code: 'MCC-HOUSTON',
-      astronautId: 1,
-    },
-    {
-      id: 'behavioral-support',
-      role: 'Monitor',
-      titleAr: 'أخصائي الدعم النفسي والفسيولوجي',
-      titleEn: 'Bio-Behavioral Health Officer',
-      roleLabelAr: 'متابعة جودة النوم والراحة والبيئة',
-      roleLabelEn: 'Circadian, Sleep & Stress Specialist',
-      badgeAr: 'الصحة السلوكية',
-      badgeEn: 'Behavioral Health',
-      iconType: 'behavioral',
-      code: 'MED-PSYCH',
-      astronautId: 1,
-    },
-    {
-      id: 'astro-vance',
-      role: 'Astronaut',
-      astronautId: 1,
-      titleAr: 'مورغان فانس',
-      titleEn: 'Morgan Vance',
-      roleLabelAr: 'قائد المهمة (AST-001)',
-      roleLabelEn: 'Commander (AST-001)',
-      badgeAr: 'طاقم المركبة',
-      badgeEn: 'Flight Crew',
-      iconType: 'astronaut',
-      code: 'AST-001',
-    },
-    {
-      id: 'astro-lee',
-      role: 'Astronaut',
-      astronautId: 2,
-      titleAr: 'جوردان لي',
-      titleEn: 'Jordan Lee',
-      roleLabelAr: 'مهندس طيران (AST-002)',
-      roleLabelEn: 'Flight Engineer (AST-002)',
-      badgeAr: 'طاقم المركبة',
-      badgeEn: 'Flight Crew',
-      iconType: 'astronaut',
-      code: 'AST-002',
-    },
-    {
-      id: 'astro-quinn',
-      role: 'Astronaut',
-      astronautId: 3,
-      titleAr: 'تايلور كوين',
-      titleEn: 'Taylor Quinn',
-      roleLabelAr: 'أخصائي حمولة (AST-003)',
-      roleLabelEn: 'Payload Specialist (AST-003)',
-      badgeAr: 'طاقم المركبة',
-      badgeEn: 'Flight Crew',
-      iconType: 'astronaut',
-      code: 'AST-003',
-    },
-  ];
+  const availableRecipients = chatRecipients(currentRole, crewMembers);
+  const activeRecipient: RecipientOption =
+    availableRecipients.find(rec => currentRole === 'Astronaut' || rec.astronautId === selectedChatAstronautId) ||
+    availableRecipients[0] || {
+      id: '', role: 'Astronaut', titleEn: 'Select an astronaut', titleAr: 'اختر رائد فضاء',
+      roleLabelEn: 'Astronaut', roleLabelAr: 'رائد فضاء', iconType: 'astronaut',
+    };
+  const hasRecipient = availableRecipients.length > 0;
 
-  // Exclude current user from recipient candidates
-  const availableRecipients = allRecipients.filter((r) => {
-    if (currentRole === 'Monitor' && r.id === 'doctor-rivera') return false;
-    if (activeAccount === 'astro.vance' && r.id === 'astro-vance') return false;
-    if (activeAccount === 'astro.lee' && r.id === 'astro-lee') return false;
-    if (activeAccount === 'astro.quinn' && r.id === 'astro-quinn') return false;
-    return true;
-  });
-
-  // Default active recipient based on role
-  const initialRecipientId =
-    currentRole === 'Monitor'
-      ? selectedChatAstronautId === 2
-        ? 'astro-lee'
-        : selectedChatAstronautId === 3
-        ? 'astro-quinn'
-        : 'astro-vance'
-      : 'doctor-rivera';
-
-  const [selectedRecipientId, setSelectedRecipientId] = useState<string>(initialRecipientId);
-
-  // Sync recipient state when role or active astronaut changes
   useEffect(() => {
-    if (currentRole === 'Monitor') {
-      const matchAstro =
-        selectedChatAstronautId === 2
-          ? 'astro-lee'
-          : selectedChatAstronautId === 3
-          ? 'astro-quinn'
-          : 'astro-vance';
-      setSelectedRecipientId(matchAstro);
-    } else {
-      setSelectedRecipientId((prev) => (prev.startsWith('astro') ? prev : 'doctor-rivera'));
-    }
-  }, [currentRole, selectedChatAstronautId]);
-
-  const activeRecipient =
-    availableRecipients.find((r) => r.id === selectedRecipientId) ||
-    availableRecipients[0] ||
-    allRecipients[0];
+    if (currentRole !== 'Monitor') return;
+    if (!availableRecipients.some(rec => rec.astronautId === selectedChatAstronautId))
+      setSelectedChatAstronautId(availableRecipients[0]?.astronautId || 0);
+  }, [currentRole, selectedChatAstronautId, crewMembers]);
 
   const handleSelectRecipient = (rec: RecipientOption) => {
-    setSelectedRecipientId(rec.id);
-    if (currentRole === 'Monitor' && rec.astronautId) {
+    if (currentRole === 'Monitor' && rec.role === 'Astronaut' && rec.astronautId)
       setSelectedChatAstronautId(rec.astronautId);
-    }
   };
 
-  // Find currently selected astronaut for doctor thread view
-  const activeAstronaut =
-    crewMembers.find((c) => c.id === selectedChatAstronautId) ||
-    crewMembers[0] || {
-      id: 1,
-      astronautCode: 'AST-001',
-      fullName: 'Morgan Vance',
-      fullNameAr: 'مورغان فانس',
-      missionName: 'Ares III Expedition',
-    };
+  const activeAstronaut = crewMembers.find(c => c.id === selectedChatAstronautId);
 
   // Mark messages as read whenever thread changes or new messages arrive
   useEffect(() => {
@@ -212,7 +74,7 @@ export const GroundOrbitChatPage: React.FC = () => {
 
   const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!messageText.trim() || sending) return;
+    if (!messageText.trim() || sending || !hasRecipient) return;
     const text = messageText.trim();
 
     setSending(true);
@@ -221,7 +83,7 @@ export const GroundOrbitChatPage: React.FC = () => {
       const recipientRoleLabel = isAr ? activeRecipient.roleLabelAr : activeRecipient.roleLabelEn;
       const targetAstroId =
         currentRole === 'Monitor'
-          ? activeRecipient.astronautId || selectedChatAstronautId
+          ? activeRecipient.astronautId
           : undefined;
 
       await sendChatMessage(text, currentRole, targetAstroId, recipientLabel, recipientRoleLabel);
@@ -281,10 +143,6 @@ export const GroundOrbitChatPage: React.FC = () => {
     switch (type) {
       case 'doctor':
         return <Stethoscope className="w-4 h-4 text-cyan-300" />;
-      case 'control':
-        return <Radio className="w-4 h-4 text-emerald-300" />;
-      case 'behavioral':
-        return <BrainCircuit className="w-4 h-4 text-purple-300" />;
       case 'astronaut':
         return <User className="w-4 h-4 text-blue-300" />;
     }
@@ -339,6 +197,7 @@ export const GroundOrbitChatPage: React.FC = () => {
             </span>
           </div>
 
+          {!hasRecipient && <p className="text-xs text-slate-400">{isAr ? 'لا يوجد رواد فضاء متاحون للمحادثة.' : 'No astronauts are available for chat.'}</p>}
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
             {availableRecipients.map((rec) => {
               const isSelected = rec.id === activeRecipient.id;
@@ -438,11 +297,11 @@ export const GroundOrbitChatPage: React.FC = () => {
                       : msg.senderName ||
                         (msg.senderRole === 'Monitor'
                           ? isAr
-                            ? 'د. كيسي ريفيرا'
-                            : 'Dr. Casey Rivera'
+                            ? 'الفريق الطبي'
+                            : 'Medical team'
                           : isAr
-                          ? activeAstronaut.fullNameAr
-                          : activeAstronaut.fullName))}
+                          ? activeAstronaut?.fullNameAr || activeAstronaut?.fullName || (isAr ? 'رائد فضاء' : 'Astronaut')
+                          : activeAstronaut?.fullName || (isAr ? 'رائد فضاء' : 'Astronaut')))}
                   </span>
 
                   {msg.recipientName && (
@@ -531,6 +390,7 @@ export const GroundOrbitChatPage: React.FC = () => {
 
         <input
           type="text"
+          disabled={!hasRecipient || sending}
           value={messageText}
           onChange={(e) => setMessageText(e.target.value)}
           placeholder={
@@ -543,7 +403,7 @@ export const GroundOrbitChatPage: React.FC = () => {
 
         <AsyncButton
           type="submit"
-          disabled={!messageText.trim() || sending}
+          disabled={!hasRecipient || !messageText.trim() || sending}
           className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white font-bold text-sm flex items-center justify-center gap-2 shadow-lg transition-all disabled:opacity-50 cursor-pointer"
         >
           <Send className="w-4 h-4" />
