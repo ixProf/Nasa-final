@@ -1,0 +1,7 @@
+bin
+obj
+publish
+tests
+.local
+*.user
+appsettings.*.local.json

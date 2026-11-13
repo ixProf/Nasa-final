@@ -1,38 +1,77 @@
-## .NET & Build artifacts
-bin/
-obj/
+# ==============================================================================
+# NASA Astronaut Health Monitoring System - Git Ignore Specification
+# ==============================================================================
+
+# Node.js & Frontend dependencies & build outputs
+node_modules/
+Frontend/node_modules/
+dist/
+Frontend/dist/
+.vite/
+Frontend/.vite/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# .NET, C# & Backend artifacts
+[Bb]in/
+[Oo]bj/
+Backend/bin/
+Backend/obj/
+Backend/publish/
+publish/
 *.user
 *.suo
 *.userosscache
 *.sln.docstates
 
-## Visual Studio, Rider & VS Code
+# IDE & Editor caches
 .vs/
-.idea/
 .vscode/
+.idea/
+*.swp
+*.swo
+*~
 
-## Test Results & Coverage
+# Environment & Sensitive Credentials (Zero Leaks Policy)
+.env
+.env.*
+!.env.example
+appsettings.Production.json
+appsettings.Development.json
+appsettings.*.local.json
+secrets.json
+.local/
+*.local.json
+
+# Keys, Certificates & SSH
+*.pem
+*.key
+*.crt
+*.id_rsa
+*.id_ed25519
+*deploy*
+
+# Test Results & Coverage
 [Tt]est[Rr]esults/
 *.trx
 coverage/
 
-## Logs
+# Logs & Temporary files
 logs/
 *.log
+*.tmp
+*.bak
+*.tar.gz
+*.zip
 
-## Local Databases & Cache
-*.db
-*.sqlite
-*.sqlite3
-*.db-shm
-*.db-wal
-*.mdf
-*.ldf
+# OS Generated
+.DS_Store
+Thumbs.db
+ehthumbs.db
 
-## Environment & Secrets (Security Sensitive)
-appsettings.Development.json
-appsettings.*.local.json
-secrets.json
-*.local.json
-.env
-.env.*
+# Antigravity & Agent scratch
+.gemini/
+.codex/
+scratch/

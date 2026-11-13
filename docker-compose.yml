@@ -1,0 +1,76 @@
+services:
+  # ── 1. Isolated PostgreSQL 16 Database Tier ──
+  postgres:
+    image: postgres:16-alpine
+    container_name: nasa-astro-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME:-astronaut_health_db}
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD must be configured}
+    volumes:
+      - nasa_astro_pgdata:/var/lib/postgresql/data
+    networks:
+      - nasa-astro-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres} -d ${DB_NAME:-astronaut_health_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    # Non-published to host ports to guarantee zero port collision with existing server databases
+
+  # ── 2. NASA Astronaut Health Monitoring .NET 9 Backend API & SignalR Hubs ──
+  backend:
+    build:
+      context: ./Backend
+      dockerfile: Dockerfile
+    container_name: nasa-astro-backend
+    restart: unless-stopped
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__DefaultConnection: Host=postgres;Port=5432;Database=${DB_NAME:-astronaut_health_db};Username=${DB_USER:-postgres};Password=${DB_PASSWORD:?DB_PASSWORD must be configured}
+      Database__AutoMigrate: "true"
+      SeedData__Enabled: "true"
+      Jwt__Key: ${JWT_KEY:?JWT_KEY must be configured}
+      Jwt__Issuer: AstronautHealthMonitoring
+      Jwt__Audience: AstronautHealthMonitoringClient
+      SeedUsers__Astronaut__Password: ${SEED_ASTRONAUT_PASSWORD:?SEED_ASTRONAUT_PASSWORD must be configured}
+      SeedUsers__Astronauts__0__Password: ${SEED_ASTRONAUT_PASSWORD:?SEED_ASTRONAUT_PASSWORD must be configured}
+      SeedUsers__Astronauts__1__Password: ${SEED_ASTRONAUT_PASSWORD:?SEED_ASTRONAUT_PASSWORD must be configured}
+      SeedUsers__Astronauts__2__Password: ${SEED_ASTRONAUT_PASSWORD:?SEED_ASTRONAUT_PASSWORD must be configured}
+      SeedUsers__Monitor__Password: ${SEED_MONITOR_PASSWORD:?SEED_MONITOR_PASSWORD must be configured}
+      Cors__AllowedOrigins__0: ${CORS_ORIGIN:-http://localhost:3050}
+      Cors__AllowedOrigins__1: http://127.0.0.1:3050
+    ports:
+      # Bound exclusively to loopback 127.0.0.1:4050 (no conflict with any existing service)
+      - "127.0.0.1:4050:8080"
+    networks:
+      - nasa-astro-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  # ── 3. Crystalline Glassmorphism React 19 + Vite Frontend SPA ──
+  frontend:
+    build:
+      context: ./Frontend
+      dockerfile: Dockerfile
+    container_name: nasa-astro-frontend
+    restart: unless-stopped
+    ports:
+      # Bound exclusively to loopback 127.0.0.1:3050 (no conflict with any existing service)
+      - "127.0.0.1:3050:80"
+    networks:
+      - nasa-astro-network
+    depends_on:
+      backend:
+        condition: service_healthy
+
+volumes:
+  nasa_astro_pgdata:
+
+networks:
+  nasa-astro-network:
+    driver: bridge
+

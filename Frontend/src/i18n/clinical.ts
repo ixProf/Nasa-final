@@ -1,0 +1,44 @@
+// Translations of the server's educational catalog, keyed by stable catalog codes.
+export const symptomArabic: Record<string, string> = {
+  DIZZINESS: 'الدوخة أو خفة الرأس', FAINTING: 'الإغماء أو فقدان الوعي', CHEST_PAIN: 'ألم أو ضيق الصدر',
+  DIFFICULTY_BREATHING: 'صعوبة التنفس أو ضيق النفس', BLURRED_VISION: 'تشوش الرؤية أو انخفاض حدتها',
+  HEADACHE: 'الصداع', FATIGUE: 'التعب أو الإرهاق العام', DIFFICULTY_CONCENTRATING: 'صعوبة التركيز أو التشوش الذهني',
+  DAYTIME_SLEEPINESS: 'النعاس أثناء النهار', POOR_SLEEP: 'سوء جودة النوم أو الاستيقاظ المتكرر',
+  INCREASED_STRESS: 'زيادة التوتر أو الضغط النفسي', MOOD_CHANGES: 'تقلب المزاج أو سرعة الانفعال',
+  LONELINESS: 'الشعور بالعزلة أو الوحدة', TREMOR: 'الرعشة أو ارتجاف العضلات', SWEATING: 'التعرق غير المعتاد',
+  CHILLS: 'القشعريرة أو الارتجاف', SKIN_SYMPTOMS: 'تهيج الجلد أو الطفح أو الحكة',
+  RESPIRATORY_IRRITATION: 'تهيج الجهاز التنفسي أو السعال أو الاحتقان',
+};
+const contact = 'تواصل مع طبيب الرحلة إذا استمرت الأعراض أو ساءت، واتبع إجراءات الطوارئ عند ظهور علامات خطر.';
+export const conditionArabic: Record<string, { nameAr: string; descriptionAr: string; selfCareGuidanceAr: string; whenToContactMonitorAr: string }> = Object.fromEntries([
+  ['ORTHOSTATIC_INTOLERANCE','عدم تحمل الوقوف','قد يرتبط بتغير توزيع سوائل الجسم وتكيف الدورة الدموية مع انعدام الجاذبية، خاصة عند العودة إلى الجاذبية.','التزم ببرنامج النشاط البدني للمهمة، وأعد قياس ضغط الدم وسجّل وضعية الجسم، وأبلغ طبيب الرحلة.'],
+  ['SPACEFLIGHT_VISION_CHANGES','التغيرات العصبية والبصرية المرتبطة برحلات الفضاء','قد ترتبط بانتقال سوائل الجسم نحو الرأس في انعدام الجاذبية.','أبلغ طبيب الرحلة والتزم بفحوص العين المجدولة. لا يمكن تقييم هذه التغيرات من المؤشرات الحيوية وحدها.'],
+  ['CLOSED_ENVIRONMENT_AIR_QUALITY','تأثيرات جودة الهواء داخل المقصورة المغلقة','قد ترتبط بتركيز ثاني أكسيد الكربون أو عوامل أخرى تؤثر في جودة الهواء داخل المقصورة.','أبلغ طبيب الرحلة وتحقق من قراءات بيئة المقصورة.'],
+  ['DEHYDRATION_NUTRITION','نقص السوائل والتغذية','قد يرتبط بالغذاء المخزن والاحتياجات الغذائية والنشاط البدني وظروف المهمة التي تؤثر في توازن السوائل والطاقة.','اتبع الخطة الغذائية للمهمة وراقب كمية السوائل. أبلغ طبيب الرحلة عن الدوخة أو الإرهاق.'],
+  ['SLEEP_DEFICIENCY','نقص النوم','قد يرتبط بالعزلة والتوتر وتغير دورات الليل والنهار وجدول العمل والإضاءة والضوضاء.','حافظ على مواعيد منتظمة للنوم والاستيقاظ وقلل الإضاءة والضوضاء التي تعوق النوم.'],
+  ['STRESS_ISOLATION','التوتر والعزلة أثناء المهمة','قد يرتبط بالبقاء لفترات طويلة في مساحة ضيقة والبعد عن الأسرة والبيئة المعتادة والتعامل المستمر مع الطاقم نفسه.','حافظ على التواصل مع الطاقم وأكمل التقييم الذاتي اليومي وجرّب تمارين الاسترخاء وتواصل مع فريق الدعم.'],
+  ['BLOOD_SUGAR_CHANGE','تغير مستوى سكر الدم','قد يرتبط بتغيرات استقلاب الجلوكوز أثناء الرحلات الفضائية.','تحقق من توقيت الوجبات وأعد القياس واتبع خطة الطبيب.'],
+  ['TEMPERATURE_CHANGE','تغير تنظيم حرارة الجسم','قد يرتبط بالعدوى أو الالتهاب أو الإجهاد الحراري أو التمارين أو ظروف القياس.','تحقق من المستشعر وظروف القياس وسجّل إن كنت في راحة أو بعد التمرين وسجّل الأعراض.'],
+  ['IMMUNE_SKIN_CHANGES','تغيرات المناعة والجلد','قد ترتبط بتغيرات في الجهاز المناعي أو الجلد أثناء الرحلات الفضائية.','سجّل الأعراض والتزم بإجراءات النظافة والوقاية واطلب المتابعة الطبية. درجة الحرارة وحدها لا توضح حالة المناعة.'],
+  ['BONE_LOSS','فقدان كثافة المعادن في العظام','قد يرتبط بانخفاض الحمل الميكانيكي على العظام الحاملة للوزن في الجاذبية المنخفضة.','اتبع برنامج التمارين الهوائية وتمارين المقاومة. يتطلب التقييم فحوصًا متخصصة ولا يعتمد على الأجهزة اليومية القابلة للارتداء.'],
+  ['MUSCLE_ATROPHY','فقدان الكتلة العضلية والقوة','قد يرتبط بانخفاض استخدام العضلات التي تعمل عادة ضد الجاذبية.','اتبع برنامج التمارين الهوائية وتمارين المقاومة. يتطلب التقييم فحوصًا متخصصة ولا يعتمد على الأجهزة اليومية القابلة للارتداء.'],
+  ['VENOUS_THROMBOEMBOLISM','تغير تدفق الدم بالوريد الوداجي وخطر التجلط','قد يرتبط بتغير تدفق الدم بأوردة الرقبة أثناء الرحلات الفضائية، بما يشمل بطء التدفق أو ركوده أو انعكاس اتجاهه.','يتطلب فحصًا متخصصًا بالموجات فوق الصوتية وتفسيرًا من الفريق الطبي. لا يمكن اكتشافه من النبض أو ضغط الدم أو الأعراض المبلغ عنها وحدها.'],
+].map(([code,nameAr,descriptionAr,selfCareGuidanceAr]) => [code,{nameAr,descriptionAr,selfCareGuidanceAr,whenToContactMonitorAr:contact}]));
+
+export const clinicalPhrases: Record<string,string> = {
+  'Dizziness / Lightheadedness':'الدوخة أو خفة الرأس','Fainting / Syncope':'الإغماء أو فقدان الوعي','Chest Pain / Tightness':'ألم أو ضيق الصدر',
+  'Difficulty Breathing / Shortness of Breath':'صعوبة التنفس أو ضيق النفس','Blurred Vision / Visual Acuity Decrease':'تشوش الرؤية أو انخفاض حدتها',
+  'Headache':'الصداع','Fatigue / General Exhaustion':'التعب أو الإرهاق العام','Difficulty Concentrating / Mental Fog':'صعوبة التركيز أو التشوش الذهني',
+  'Daytime Sleepiness / Excessive Somnolence':'النعاس أثناء النهار','Poor Sleep Quality / Frequent Awakenings':'سوء جودة النوم أو الاستيقاظ المتكرر',
+  'Increased Stress / Subjective Tension':'زيادة التوتر أو الضغط النفسي','Mood Changes / Irritability':'تقلب المزاج أو سرعة الانفعال',
+  'Feelings of Isolation / Loneliness':'الشعور بالعزلة أو الوحدة','Tremor / Muscle Shaking':'الرعشة أو ارتجاف العضلات','Unusual Sweating / Diaphoresis':'التعرق غير المعتاد',
+  'Chills / Shivering':'القشعريرة أو الارتجاف','Skin Irritation / Rash / Pruritus':'تهيج الجلد أو الطفح أو الحكة','Respiratory Irritation / Cough / Congestion':'تهيج الجهاز التنفسي أو السعال أو الاحتقان',
+  'Stop activity, secure your posture, follow the emergency protocol and contact the medical officer immediately.':'أوقف النشاط وثبّت وضعية جسمك واتبع إجراءات الطوارئ وتواصل مع طبيب الرحلة فورًا.',
+  'Seek crew support and contact the psychological support specialist.':'اطلب دعم الطاقم وتواصل مع اختصاصي الدعم النفسي.',
+  'Re-measure relevant indicators, log symptoms and contact the medical officer for review.':'أعد قياس المؤشرات ذات الصلة وسجّل الأعراض وتواصل مع طبيب الرحلة للمراجعة.',
+  'Rest, maintain hydration according to your mission plan, and re-measure. Report persistent or worsening symptoms.':'استرح وحافظ على الترطيب وفق خطة المهمة وأعد القياس. أبلغ عن الأعراض المستمرة أو المتفاقمة.',
+  'Visual symptoms accompany a persistent headache.':'توجد أعراض بصرية مصاحبة لصداع مستمر.',
+  'Guidance only, not a clinical diagnosis. Consult medical officer or flight surgeon.':'إرشادات فقط وليست تشخيصًا طبيًا. استشر المسؤول الطبي أو طبيب الرحلة.',
+  'Demo thresholds – to be reviewed by the mission medical team':'حدود توضيحية تحتاج إلى مراجعة الفريق الطبي للمهمة',
+  'Emergency notification could not be saved. Contact the medical officer immediately and retry when connected.':'تعذّر حفظ إشعار الطوارئ. تواصل مع طبيب الرحلة فورًا وأعد المحاولة عند عودة الاتصال.',
+};
